@@ -1,0 +1,16 @@
+type Query {
+  colors: [ColorChoose]
+}
+
+type Mutation {
+  addNewColor(name: String!, code: String!): ColorResult
+}
+
+type ColorChoose {
+  name: String!
+  code: String!
+}
+
+type ColorResult {
+  message: String
+}

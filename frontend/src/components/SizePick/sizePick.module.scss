@@ -1,0 +1,22 @@
+@import '../../scss/vars.scss';
+.size{
+    display: inline-block;
+    flex-wrap: wrap;
+    margin: 5px 10px 5px 0;
+    font-size: 18px;
+    border: 1px lightgray solid;
+    cursor: pointer;
+    padding: 8px;
+    // transition: 0.05s;
+    &:hover{
+        color:$secondary-color;
+        text-decoration: wavy;
+    }
+    &__active{
+        color:#fff;
+        background-color: #000;
+    }
+    &:active{
+        transform: scale(0.9);
+    }
+}

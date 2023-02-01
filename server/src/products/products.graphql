@@ -1,0 +1,78 @@
+type Query {
+  productsByPopularity(
+    minPrice: Float
+    maxPrice: Float
+    type: String!
+  ): [Product]
+  productsByPrice(
+    minPrice: Float
+    maxPrice: Float
+    sort: Int
+    type: String!
+  ): [Product]
+  productByUrl(url: String!): Product
+}
+
+type Mutation {
+  addNewProduct(
+    title: String!
+    url: String
+    description: String!
+    type: String!
+    price: Float!
+    color: [ColorInput]!
+    allSizes: [Int]!
+  ): Product
+}
+
+type Product {
+  _id: ID!
+  title: String!
+  url: String!
+  description: String!
+  type: String!
+  price: Float!
+  allSizes: [Int]!
+  buyCount: Int!
+  color: [Color]!
+}
+
+type Color {
+  name: String!
+  sizesAvailable: Sizes!
+}
+
+input ColorInput {
+  name: String!
+  sizesAvailable: SizesInput!
+}
+
+type Sizes {
+  _36: Int
+  _37: Int
+  _38: Int
+  _39: Int
+  _40: Int
+  _41: Int
+  _42: Int
+  _43: Int
+  _44: Int
+  _45: Int
+  _46: Int
+  _47: Int
+}
+
+input SizesInput {
+  _36: Int
+  _37: Int
+  _38: Int
+  _39: Int
+  _40: Int
+  _41: Int
+  _42: Int
+  _43: Int
+  _44: Int
+  _45: Int
+  _46: Int
+  _47: Int
+}

@@ -1,0 +1,23 @@
+@import 'normalize.css';
+@import './vars.scss';
+body{
+    scroll-behavior: smooth;
+    text-rendering: optimizeSpeed;
+}
+ul{
+    list-style: none;
+}
+
+a{
+    display: inline-block;
+ text-decoration: none;
+ color: #000;
+ transition: 0.4s;
+ &:hover{
+    color:$secondary-color;
+}
+}
+
+img{
+    width: 100%;
+}

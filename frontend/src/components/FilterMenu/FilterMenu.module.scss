@@ -1,0 +1,64 @@
+@import '../../scss/vars.scss';
+.menu{
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    position: fixed;
+    top: 0;
+    right: -550px;
+    width: 500px;
+    padding: 20px 40px;
+    height: 100vh;
+    background-color: #fff;
+    box-shadow: -5px 0px 20px rgba(0, 0, 0, 0.3);
+    transition: 0.8s;
+    font-size: 24px;
+    z-index: 1000;
+}
+.title{
+    display: flex;
+    margin: 0px auto -10px;
+    width: fit-content;
+    font-size: 36px;
+    font-weight: 900;
+}
+.filters__title{
+    margin-top: 20px;
+    font-size: 18px;
+    text-transform: uppercase;
+    color: grey;
+}
+
+.close{
+    position: absolute;
+    width: 30px;
+    height: 25px;
+    top: 5px;
+    right: 5px;
+    cursor: pointer;
+    &::before{
+        content: "";
+        position: absolute;
+        left: 50%;
+        rotate: 45deg;
+        display: flex;
+        height: 100%;
+        width: 2px;
+        background-color: #222;
+    }
+    &::after{
+        content: "";
+        position: absolute;
+        left: 50%;
+        rotate: -45deg;
+        display: flex;
+        height: 100%;
+        width: 2px;
+        background-color: #222;
+        
+    }
+}
+
+
+
+

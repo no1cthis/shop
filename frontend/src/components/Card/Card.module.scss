@@ -1,0 +1,96 @@
+@import '../../scss/vars.scss';
+
+.card{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    padding: 10px 5px;
+    transition: 0.3s;
+    &:hover{
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    }
+    &:hover .sizes{
+        opacity: 1;
+    }
+}
+.mainPicture{
+    cursor: pointer;
+    object-fit: contain;
+    mix-blend-mode: lighten;
+}
+.miniPictures{
+    display: flex;
+    justify-content: center;
+    margin-top: 2px;
+ 
+    img{
+        width: 20%;
+        margin-right: 5px;
+        cursor: pointer;
+        object-fit: contain;
+    }
+}
+.sizes{
+    opacity: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 70%;
+    margin: 0 auto;
+    margin-top: 20px;
+    transition: 0.4s;
+}
+.size{
+    margin-right: 10px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+}
+.size__active{
+    &:hover{
+        color:$secondary-color
+    }
+}
+.size__unactive{
+    text-decoration: line-through;
+    color: gray;
+}
+.details{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-left: auto;
+}
+.details_col1{
+    margin-left: 20px;
+}
+.details_col2{
+    height: fit-content;
+    margin: auto 0;
+    margin-right: 10px;
+    background-color: black;
+    transition: 0.3s;
+    &:hover{
+        background-color: $secondary-color;
+    }
+}
+.name{
+    margin-top: 20px;
+    display: flex;
+    font-size: 24px;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+.price{
+    margin-top: 10px;
+    font-weight: bold;
+    font-size: 18px;
+    cursor: default;
+}
+.shop{
+    color: white;
+    padding: 10px;
+    font-size: 30px;
+    cursor: pointer;
+}
