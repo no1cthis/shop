@@ -5,6 +5,7 @@ import { BsFillBagPlusFill } from "react-icons/bs";
 
 import cl from "./Card.module.scss";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 interface CardProps {
   name: string;
@@ -61,10 +62,12 @@ const Card: FC<CardProps> = ({
         </div>
         <div className={cl.sizes}>
           {allSizes.map((size) => {
+            //@ts-expect-error
             const active = sizesAvailable[`_${size}`]
               ? cl.size__active
               : cl.size__unactive;
             return (
+              //@ts-expect-error
               <span key={size} className={`${cl.size} ${active}`}>
                 {size}
               </span>

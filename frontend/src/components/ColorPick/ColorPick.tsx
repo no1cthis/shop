@@ -6,7 +6,7 @@ interface ColorPickProps {
   active: boolean;
   name: string;
   colorCode: string;
-  setFilter?: (FilterType: string, value: string | number) => void;
+  setFilter?: (value: string | number, FilterType?: string) => void;
 }
 
 const ColorPick: FC<ColorPickProps> = ({
@@ -21,7 +21,7 @@ const ColorPick: FC<ColorPickProps> = ({
         className={`${cl.color} ${active ? cl.color__active : undefined}`}
         style={{ backgroundColor: colorCode }}
         onClick={() => {
-          if (setFilter) setFilter("color", name);
+          if (setFilter) setFilter(name, "color");
         }}
       />
       <span className={cl.color__name}>{name}</span>

@@ -2,7 +2,7 @@ import { Product } from "@/types/product";
 import { useQuery } from "@apollo/client";
 import { useRouter } from "next/router";
 import { FC, Dispatch, SetStateAction, useState } from "react";
-import { FETCH_PRODUCTS_BY_POPULARITY_AND_COLOR } from "../../service/fetchList";
+import { FETCH_PRODUCTS_AND_COLOR } from "../../graphQL/fetchList";
 import PriceSlider from "../PriceSlider/PriceSlider";
 import { FilterType } from "../../types/filter";
 import cl from "./FilterMenu.module.scss";
@@ -24,14 +24,15 @@ const FilterMenu: FC<FilterMenuProps> = ({
 }) => {
   const router = useRouter();
   const [colors, setColors] = useState<[string, string][]>();
+
   useQuery<{
-    productsByPopularity: [Product];
+    productsWithFilter: [Product];
     colors: [{ name: String; code: String }];
-  }>(FETCH_PRODUCTS_BY_POPULARITY_AND_COLOR, {
-    variables: { type: router.pathname.slice(1) },
+  }>(FETCH_PRODUCTS_AND_COLOR, {
+    variables: { type: router.asPath.slice(1) },
     onCompleted: (data) => {
       const colorsMap = new Map();
-      data.productsByPopularity.forEach((product) => {
+      data.productsWithFilter.forEach((product) => {
         product.color.forEach((color) => {
           //@ts-ignore
           colorsMap.set(
@@ -40,6 +41,10 @@ const FilterMenu: FC<FilterMenuProps> = ({
               (colorFromData) => color.name === colorFromData.name
             )?.code
           );
+          if (colorsMap.size === data.colors.length) {
+            setColors(Array.from(colorsMap));
+            return;
+          }
         });
       });
       console.log(data);
@@ -47,18 +52,18 @@ const FilterMenu: FC<FilterMenuProps> = ({
     },
   });
 
-  const changeFilter = (filterType: string, value: string | number) => {
+  const changeFilter = (value: string | number, filterType?: string) => {
     switch (filterType) {
       case "size":
         const size = new Map(filter.size);
         if (size.get(Number(value))) size.delete(Number(value));
-        else size.set(Number(value), true);
+        else size.set(Number(value), Number(value));
         setFilter({ ...filter, size });
         break;
       case "color":
         const color = new Map(filter.color);
         if (color.get(value.toString())) color.delete(value.toString());
-        else color.set(value.toString(), true);
+        else color.set(value.toString(), value.toString());
         setFilter({ ...filter, color });
         break;
     }
@@ -94,13 +99,11 @@ const FilterMenu: FC<FilterMenuProps> = ({
       <div className={cl.title}>FILTER</div>
       <div className={cl.filters}>
         <div className={cl.filters__title}>size</div>
-        <div className={cl.filters__choose}>{sizesFilter}</div>
+        <div>{sizesFilter}</div>
       </div>
       <div className={cl.filters}>
         <div className={cl.filters__title}>Colors</div>
-        <div className={`${cl.filters__choose} ${cl.unselectable}`}>
-          {colorsFilter}
-        </div>
+        <div className={`${cl.colors} ${cl.unselectable}`}>{colorsFilter}</div>
       </div>
       <div className={cl.filters}>
         <div className={cl.filters__title}>Price</div>

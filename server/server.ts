@@ -1,4 +1,4 @@
-import * as path from "path";
+import path from "path";
 import app from "./src/app";
 import { mongoConnect } from "./src/services/mongo";
 import { ApolloServer } from "apollo-server-express";

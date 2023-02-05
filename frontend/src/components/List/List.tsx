@@ -1,23 +1,32 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import Card from "../Card/Card";
 import { Product } from "../../types/product";
 
 import cl from "./List.module.scss";
 import Container from "../Container/Container";
 import Filter from "../Filter/Filter";
-import { ApolloError, useLazyQuery } from "@apollo/client";
 import {
-  FETCH_PRODUCTS_BY_POPULARITY,
-  FETCH_PRODUCTS_BY_PRICE,
-} from "@/service/fetchList";
+  ApolloError,
+  LazyQueryHookOptions,
+  OperationVariables,
+  useLazyQuery,
+} from "@apollo/client";
+import { FETCH_PRODUCTS_WITH_FILTERS } from "@/graphQL/fetchList";
 import { useRouter } from "next/router";
 import { FilterType } from "@/types/filter";
+import { useFetchWithFilters } from "@/service/useFetchWithFilters";
 
 interface ListProps {
   data?: Product[];
 }
 
 const List: FC<ListProps> = ({}) => {
+  const router = useRouter();
+  const filterHistory = useRef({
+    sizes: new Map<number, number>(),
+    colors: new Map<string, string>(),
+  });
+  const fetchBlock = useRef<boolean>(false);
   const pictures = [
     "https://eu.muroexe.com/68153-home_default/materia-mod-camel.jpg",
     "https://eu.muroexe.com/67986-home_default/custom.jpg",
@@ -36,67 +45,216 @@ const List: FC<ListProps> = ({}) => {
     },
   });
   useEffect(() => {
-    if (!data) {
-      console.log("if");
+    setFilter({
+      ...filter,
+      price: {
+        ...filter.price,
+        min: filter.price.lowerPrice,
+        max: filter.price.higherPrice,
+      },
+    });
+    fetchBlock.current = true;
+  }, [filter.price.lowerPrice, filter.price.higherPrice]);
+  const [error, setError] = useState<ApolloError>();
+  const [loading, setLoading] = useState(false);
+  const [sort, setSort] = useState("Best sellers");
+
+  const changePriceLimits = ({
+    data,
+    calculateLimits,
+  }: {
+    data: Product[];
+    calculateLimits?: boolean;
+  }) => {
+    let lowerPrice: number, higherPrice: number;
+
+    if (!data.length) {
+      setFilter({
+        ...filter,
+        price: {
+          lowerPrice: 0,
+          higherPrice: 0,
+          min: 0,
+          max: 0,
+        },
+      });
       return;
     }
-    let lowerPrice = Number.MAX_VALUE;
-    let higherPrice = Number.MIN_VALUE;
-    data.forEach((product) => {
-      lowerPrice = lowerPrice < product.price ? lowerPrice : product.price;
-      higherPrice = higherPrice > product.price ? higherPrice : product.price;
-    });
+    if (!calculateLimits) {
+      lowerPrice = filter.price.lowerPrice;
+      higherPrice = filter.price.higherPrice;
+    } else {
+      lowerPrice = Number.MAX_VALUE;
+      higherPrice = Number.MIN_VALUE;
+      data.forEach((product) => {
+        lowerPrice = lowerPrice < product.price ? lowerPrice : product.price;
+        higherPrice = higherPrice > product.price ? higherPrice : product.price;
+      });
+    }
     setFilter({
       ...filter,
       price: {
         lowerPrice,
         higherPrice,
-        min: lowerPrice > filter.price.min ? lowerPrice : filter.price.min,
-        max: higherPrice < filter.price.max ? higherPrice : filter.price.max,
+        min: calculateLimits
+          ? lowerPrice
+          : lowerPrice > filter.price.min
+          ? lowerPrice
+          : filter.price.min,
+        max: calculateLimits
+          ? higherPrice
+          : higherPrice < filter.price.max
+          ? higherPrice
+          : filter.price.max,
       },
     });
-  }, [data]);
-  const [error, setError] = useState<ApolloError>();
-  const [loading, setLoading] = useState(true);
-  const [sort, setSort] = useState("Best sellers");
-  const [productsByPopularity] = useLazyQuery(FETCH_PRODUCTS_BY_POPULARITY, {
-    onCompleted: (fetchedData: { productsByPopularity: [Product] }) => {
-      //@ts-ignore
-      setData(fetchedData.productsByPopularity);
-      setLoading(false);
-    },
+  };
+
+  const fetchWithChangeLimits = useFetchWithFilters({
+    calculateLimits: true,
+    changePriceLimits,
+    setData,
+    setError,
+    setLoading,
   });
-  const [productsByPrice] = useLazyQuery(FETCH_PRODUCTS_BY_PRICE, {
-    onCompleted: (fetchedData: { productsByPrice: [Product] }) => {
-      //@ts-ignore
-      setData(fetchedData.productsByPrice);
-      setLoading(false);
-    },
-    onError: (error) => setError(error),
+  const fetchWithoutChangeLimits = useFetchWithFilters({
+    calculateLimits: false,
+    changePriceLimits,
+    setData,
+    setError,
+    setLoading,
   });
 
-  const router = useRouter();
+  const checkFilter = (map1: Map<any, any>, map2: Map<any, any>) => {
+    if (map1.size !== map2.size) return undefined;
+    const array: any[] = [];
+    map1.forEach((elem) => {
+      const value = map2.get(elem);
+      if (value) array.push(value);
+      else return undefined;
+    });
 
-  useEffect(() => {
-    setLoading(true);
+    return array;
+  };
+
+  const fetch = ({
+    fetchFunc,
+    maxPrice,
+    minPrice,
+    colors = Array.from(filter.color.keys()),
+    sizes = Array.from(filter.size.keys()),
+  }: {
+    fetchFunc: (
+      options?:
+        | Partial<
+            LazyQueryHookOptions<
+              {
+                productsWithFilter: [Product];
+              },
+              OperationVariables
+            >
+          >
+        | undefined
+    ) => any;
+    minPrice?: number;
+    maxPrice?: number;
+    colors?: string[];
+    sizes?: number[];
+  }) => {
     switch (sort) {
       case "Best sellers":
-        productsByPopularity({ variables: { type: router.pathname.slice(1) } });
-        break;
-      case "Price low to high":
-        productsByPrice({
-          variables: { type: router.pathname.slice(1), sort: 1 },
+        fetchFunc({
+          variables: {
+            minPrice,
+            maxPrice,
+            sortBy: "buyCount",
+            type: router.asPath.slice(1),
+            colors,
+            sizes,
+          },
         });
         break;
+      case "Price low to high":
+        fetchFunc({
+          variables: {
+            minPrice,
+            maxPrice,
+            sortBy: "price",
+            type: router.asPath.slice(1),
+            colors,
+            sizes,
+          },
+        });
+
+        break;
       case "Price high to low":
-        productsByPrice({
-          variables: { type: router.pathname.slice(1), sort: -1 },
+        fetchFunc({
+          variables: {
+            minPrice,
+            maxPrice,
+            sortBy: "price",
+            sort: -1,
+            type: router.asPath.slice(1),
+            colors,
+            sizes,
+          },
         });
         break;
       default:
-        productsByPopularity({ variables: { type: router.pathname.slice(1) } });
+        fetchFunc({
+          variables: {
+            minPrice,
+            maxPrice,
+            sortBy: "buyCount",
+            type: router.asPath.slice(1),
+            colors,
+            sizes,
+          },
+        });
     }
-  }, [sort]);
+  };
+
+  useEffect(() => {
+    if (/\/\[/.test(router.asPath) || loading) return;
+    setLoading(true);
+    fetch({ fetchFunc: fetchWithChangeLimits });
+  }, [router.asPath, sort]);
+
+  useEffect(() => {
+    if (loading) return;
+    if (fetchBlock.current) {
+      fetchBlock.current = false;
+      return;
+    }
+    const timer = setTimeout(() => {
+      const colors = checkFilter(filterHistory.current.colors, filter.color);
+      const sizes = checkFilter(filterHistory.current.sizes, filter.size);
+      const fetchFunc =
+        colors && sizes ? fetchWithoutChangeLimits : fetchWithChangeLimits;
+
+      filterHistory.current.colors = filter.color;
+      filterHistory.current.sizes = filter.size;
+
+      setLoading(true);
+
+      fetch({
+        fetchFunc,
+        maxPrice:
+          filter.price.max === filter.price.higherPrice || colors || sizes
+            ? undefined
+            : filter.price.max,
+        minPrice:
+          filter.price.min === filter.price.lowerPrice || colors || sizes
+            ? undefined
+            : filter.price.min,
+        colors,
+        sizes,
+      });
+    }, 1500);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [filter.price.min, filter.price.max, filter.color, filter.size]);
 
   if (!loading && error) {
     return <>{error.message}</>;
@@ -106,7 +264,9 @@ const List: FC<ListProps> = ({}) => {
     const sizes = {};
     card.color.forEach((color, i) => {
       for (let size in color.sizesAvailable) {
+        //@ts-expect-error
         if (i === 1 || color.sizesAvailable[size])
+          //@ts-expect-error
           sizes[size] = !!color.sizesAvailable[size];
       }
     });

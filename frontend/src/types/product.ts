@@ -18,7 +18,7 @@ export type Color = {
 export type Details = {
   title: string;
   description: string;
-  price: string;
+  price: string | number;
   type: string;
   color: Color[];
   allSizes: number[];

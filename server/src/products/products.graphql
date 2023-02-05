@@ -1,14 +1,13 @@
+#import from "../graphQL/globalTypes.graphql"
 type Query {
-  productsByPopularity(
+  productsWithFilter(
     minPrice: Float
     maxPrice: Float
-    type: String!
-  ): [Product]
-  productsByPrice(
-    minPrice: Float
-    maxPrice: Float
+    sortBy: String
     sort: Int
-    type: String!
+    type: String
+    colors: [String]
+    sizes: [Int]
   ): [Product]
   productByUrl(url: String!): Product
 }
@@ -22,7 +21,7 @@ type Mutation {
     price: Float!
     color: [ColorInput]!
     allSizes: [Int]!
-  ): Product
+  ): ProductAddResult
 }
 
 type Product {
@@ -76,3 +75,15 @@ input SizesInput {
   _46: Int
   _47: Int
 }
+
+union ProductAddResult = Product | Error
+
+# enum SortBy {
+#   "buyCount"
+#   "price"
+# }
+
+# enum Sort {
+#   1
+#   -1
+# }

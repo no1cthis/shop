@@ -61,13 +61,16 @@
     justify-content: space-between;
     width: 100%;
     margin-left: auto;
+    margin-top: auto;
 }
 .details_col1{
     margin-left: 20px;
 }
 .details_col2{
     height: fit-content;
-    margin: auto 0;
+    // margin: auto 0;
+    margin-top: auto;
+    margin-bottom: 20px;
     margin-right: 10px;
     background-color: black;
     transition: 0.3s;
@@ -89,6 +92,7 @@
     cursor: default;
 }
 .shop{
+    margin-top: auto;
     color: white;
     padding: 10px;
     font-size: 30px;

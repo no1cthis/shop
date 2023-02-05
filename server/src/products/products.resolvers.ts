@@ -2,19 +2,22 @@ import productsModel from "./products.model";
 
 module.exports = {
   Query: {
-    productsByPopularity: (_, { minPrice, maxPrice, type }) => {
-      return productsModel.getAllProductsByPopularity(minPrice, maxPrice, type);
-    },
     productByUrl: (_, { url }) => {
       return productsModel.getProductByUrl(url);
     },
-    productsByPrice: (_, { minPrice, maxPrice, sort, type }) => {
-      return productsModel.getAllProductsByPrice(
+    productsWithFilter: (
+      _,
+      { minPrice, maxPrice, sortBy, sort, type, colors, sizes }
+    ) => {
+      return productsModel.getAllProductsFilter({
         minPrice,
         maxPrice,
+        sortBy,
         sort,
-        type
-      );
+        type,
+        colors,
+        sizes,
+      });
     },
   },
   Mutation: {

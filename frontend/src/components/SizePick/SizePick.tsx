@@ -5,7 +5,7 @@ import cl from "./sizePick.module.scss";
 interface SizePickProps {
   active: boolean;
   size: number;
-  setFilter?: (FilterType: string, value: string | number) => void;
+  setFilter?: (value: string | number, FilterType?: string) => void;
 }
 
 const SizePick: FC<SizePickProps> = ({ active, setFilter, size }) => {
@@ -15,7 +15,7 @@ const SizePick: FC<SizePickProps> = ({ active, setFilter, size }) => {
         active ? cl.size__active : undefined
       } `}
       onClick={() => {
-        if (setFilter) setFilter("size", size);
+        if (setFilter) setFilter(size, "size");
       }}
     >
       {size}

@@ -1,0 +1,14 @@
+#import from "../graphQL/globalTypes.graphql"
+type Query {
+  allProductTypes: [ProductType]
+}
+
+type Mutation {
+  addNewProductType(name: String!): ProductTypeAddResult
+}
+
+type ProductType {
+  name: String!
+}
+
+union ProductTypeAddResult = Error | ProductType
