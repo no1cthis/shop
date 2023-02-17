@@ -1,13 +1,13 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import Layout from "@/components/Layout/Layout";
-import AdminPanel from "../../components/AdminPanel/AdminPanel";
+import { useRouter } from "next/router";
 
 const AdminPanelPage: FC = () => {
-  return (
-    <Layout>
-      <AdminPanel />
-    </Layout>
-  );
+  const router = useRouter();
+  useEffect(() => {
+    router.push("/add-forms");
+  }, []);
+  return <></>;
 };
 
 export default AdminPanelPage;

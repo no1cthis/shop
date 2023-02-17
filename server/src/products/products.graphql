@@ -9,7 +9,24 @@ type Query {
     colors: [String]
     sizes: [Int]
   ): [Product]
+
+  cardsWithFilter(
+    minPrice: Float
+    maxPrice: Float
+    sortBy: String
+    sort: Int
+    type: String
+    colors: [String]
+    sizes: [Int]
+  ): [Card]
+  productsByTitle(title: String!): [Product]
   productByUrl(url: String!): Product
+  checkAvailable(
+    title: String!
+    colorName: String!
+    size: Int!
+    quantity: Int!
+  ): Check
 }
 
 type Mutation {
@@ -22,6 +39,17 @@ type Mutation {
     color: [ColorInput]!
     allSizes: [Int]!
   ): ProductAddResult
+  editProduct(
+    title: String!
+    url: String!
+    description: String!
+    type: String!
+    price: Float!
+    color: [ColorInput]!
+    allSizes: [Int]!
+  ): ProductAddResult
+  deleteProduct(url: String!): Boolean
+  buyProduct(title: String!, colorName: String!): Boolean
 }
 
 type Product {
@@ -31,18 +59,35 @@ type Product {
   description: String!
   type: String!
   price: Float!
+  demoPhotos: [String]
   allSizes: [Int]!
   buyCount: Int!
   color: [Color]!
 }
 
+type Card {
+  title: String!
+  url: String!
+  price: Float!
+  allSizes: [Int]!
+  color: [ColorForCard]!
+}
+
+type ColorForCard {
+  name: String!
+  photo: String!
+  sizesAvailable: Sizes!
+}
+
 type Color {
   name: String!
+  photos: [String]!
   sizesAvailable: Sizes!
 }
 
 input ColorInput {
   name: String!
+  photos: [String]!
   sizesAvailable: SizesInput!
 }
 
@@ -78,12 +123,7 @@ input SizesInput {
 
 union ProductAddResult = Product | Error
 
-# enum SortBy {
-#   "buyCount"
-#   "price"
-# }
-
-# enum Sort {
-#   1
-#   -1
-# }
+type Check {
+  ok: Boolean!
+  available: Int!
+}

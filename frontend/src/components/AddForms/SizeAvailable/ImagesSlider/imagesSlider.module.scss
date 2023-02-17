@@ -1,0 +1,25 @@
+.wrapper{
+    display: flex;
+    flex-direction: column;
+}
+.image{
+    cursor: move;
+    display: flex;
+    width: 100%;
+    object-fit: contain;
+    margin: 10px auto;
+    &__wrapper{
+        position: relative;
+    }
+}
+.close{
+    position: absolute;
+    top:10px;
+    right: 5px;
+    color: #eee;
+    cursor: pointer;
+    mix-blend-mode: difference;  
+}
+.overDrag{
+    box-shadow: 0px 0px 50px rgba(0, 0, 0, 0.5);
+}

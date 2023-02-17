@@ -13,11 +13,20 @@ a{
  text-decoration: none;
  color: #000;
  transition: 0.4s;
- &:hover{
-    color:$secondary-color;
+//  &:hover{
+    // color:$secondary-color;
 }
-}
+
 
 img{
     width: 100%;
 }
+
+::-webkit-scrollbar {
+    width: 5px;
+    background-color: #fff;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: #000;
+  }

@@ -1,10 +1,14 @@
 import { Inter } from "@next/font/google";
-
-import Layout from "@/components/Layout/Layout";
-import Sneakers from "./sneakers";
+import { useRouter } from "next/router";
+import { NextResponse } from "next/server";
+import { useEffect } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
-  return <Layout>HOME</Layout>;
+  const router = useRouter();
+  useEffect(() => {
+    router.push("/sales");
+  }, []);
+  return <></>;
 }

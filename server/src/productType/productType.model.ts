@@ -9,7 +9,6 @@ async function addNewProductType(productType: {
   name: string;
   __typename?: string;
 }) {
-  console.log(productType.name);
   const { error, value } = validator.validateProductType(productType);
   if (error) return { message: error.message, __typename: "Error" };
   productType = {
@@ -27,4 +26,8 @@ async function addNewProductType(productType: {
   return productType;
 }
 
-export default { getAllProductType, addNewProductType };
+async function deleteProductType(name: String) {
+  return (await productTypeCollection.deleteOne({ name })).deletedCount > 0;
+}
+
+export default { getAllProductType, addNewProductType, deleteProductType };

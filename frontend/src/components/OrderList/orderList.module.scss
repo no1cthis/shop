@@ -1,0 +1,20 @@
+.list{
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 0.5fr 0.5fr 1.5fr 1.5fr 0.5fr 1.5fr 0.5fr 0.5fr;
+    row-gap: 10px;
+    margin-top: 20px;
+    font-size: 18px;
+    min-height: 10vh;
+}
+.inputs{
+    display: flex;
+    justify-content: space-evenly;
+    padding: 10px 0;
+    border-bottom: #e2e2e2 1px solid;
+    border-top: #e2e2e2 1px solid;
+    input{
+        margin: 0 5px;
+        font-size: 18px;
+    }
+}

@@ -1,0 +1,86 @@
+type Query {
+  orders(
+    sortBy: String
+    sort: Int
+    customerName: String
+    recieverName: String
+    email: String
+    phone: String
+  ): [Order]
+}
+
+type Mutation {
+  editOrder(order: OrderInput!): Order
+}
+
+type Order {
+  id: String!
+  products: [ProductInOrder]!
+  customer: Customer!
+  reciever: Reciever!
+  created: Float!
+  status: String!
+}
+
+input OrderInput {
+  id: String!
+  products: [ProductInOrderInput]!
+  customer: CustomerInput!
+  reciever: RecieverInput!
+  created: Float!
+  status: String!
+}
+
+type ProductInOrder {
+  title: String!
+  color: String!
+  size: Int!
+  quantity: Int!
+}
+
+input ProductInOrderInput {
+  title: String!
+  color: String!
+  size: Int!
+  quantity: Int!
+}
+
+type Customer {
+  name: String!
+  email: String!
+  phone: String!
+}
+
+input CustomerInput {
+  name: String!
+  email: String!
+  phone: String!
+}
+
+type Reciever {
+  address: Address!
+  name: String!
+}
+
+input RecieverInput {
+  address: AddressInput!
+  name: String!
+}
+
+type Address {
+  city: String!
+  country: String!
+  line1: String!
+  line2: String!
+  postal_code: String!
+  state: String!
+}
+
+input AddressInput {
+  city: String!
+  country: String!
+  line1: String!
+  line2: String!
+  postal_code: String!
+  state: String!
+}

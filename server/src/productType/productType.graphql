@@ -5,6 +5,7 @@ type Query {
 
 type Mutation {
   addNewProductType(name: String!): ProductTypeAddResult
+  deleteProductType(name: String!): Boolean
 }
 
 type ProductType {

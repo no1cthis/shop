@@ -18,18 +18,19 @@
     cursor: pointer;
     object-fit: contain;
     mix-blend-mode: lighten;
+    position: relative;
+    min-width: 200px;
 }
 .miniPictures{
     display: flex;
     justify-content: center;
     margin-top: 2px;
- 
-    img{
-        width: 20%;
-        margin-right: 5px;
-        cursor: pointer;
-        object-fit: contain;
-    }
+}
+.miniPicture{
+    width: 20%;
+    margin-right: 5px;
+    cursor: pointer;
+    // object-fit: contain;
 }
 .sizes{
     opacity: 0;
@@ -46,15 +47,19 @@
     font-weight: bold;
     font-size: 16px;
     cursor: pointer;
-}
-.size__active{
-    &:hover{
-        color:$secondary-color
+    &__unavailable{
+        text-decoration: line-through;
+        color: gray;
     }
-}
-.size__unactive{
-    text-decoration: line-through;
-    color: gray;
+    &__available{
+        &:hover{
+            color:$secondary-color
+        }
+    }
+    &__active{
+        font-weight: bolder !important;
+        color: $secondary-color;
+    }
 }
 .details{
     display: flex;
@@ -78,7 +83,7 @@
         background-color: $secondary-color;
     }
 }
-.name{
+.title{
     margin-top: 20px;
     display: flex;
     font-size: 24px;

@@ -1,0 +1,129 @@
+.wrapper{
+    display: flex;
+    align-items: flex-start;
+    font-size: 24px;
+    margin: 5px 0;
+    
+    textarea{
+        resize: none;
+        height: 100%;
+        padding: 6px;
+        &::-webkit-scrollbar {
+            width: 0px;
+        }
+
+    }
+    input{
+        display: flex;
+        padding: 5px;
+        margin:0 5px;
+    }
+    input[type=number]{
+        width: 100px;
+    }
+}
+.colors{
+    width: 250px;
+    margin:0 5px;
+}
+.sizes{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    &__wrapper{
+        width: 200px;
+    }
+}
+
+.delete{
+    position: relative;
+    width: calc(100% - 95%);
+    height: 20px;
+    cursor: pointer;
+
+    &::before{
+        content: "";
+        position: absolute;
+        left: 50%;
+        rotate: 45deg;
+        display: flex;
+        height: 100%;
+        width: 2px;
+        background-color: #222;
+    }
+    &::after{
+        content: "";
+        position: absolute;
+        left: 50%;
+        rotate: -45deg;
+        display: flex;
+        height: 100%;
+        width: 2px;
+        background-color: #222;
+        
+    }
+    &__wrapper{
+        position: absolute;
+        content: "";
+        top: 4px;
+        right: 20px;
+    }
+}
+.color__wrapper{
+    position: relative;
+}
+.button{
+    cursor: pointer;
+    margin-left: 5px;
+}
+.addColorButton{
+    cursor: pointer;
+    width: 100%;
+}
+.colorList__wrapper{
+    display: grid;
+    width: 100%;
+    row-gap: 10px;
+}
+.save{
+        &__loading{
+        animation-name: loading__save;
+        animation-duration: 1s;
+        animation-iteration-count: infinite;
+
+        @keyframes loading__save {
+            0% {
+                color:rgba(0,0,255,1);
+            }
+            50% {
+                color:rgba(0,0,255,0);
+            }
+            100% {
+                color:rgba(0,0,255,1);
+            }
+        }
+    }
+}
+.delete{
+    &__loading{
+        animation-name: loading__delete;
+        animation-duration: 1s;
+        animation-iteration-count: infinite;
+
+        @keyframes loading__delete {
+            0% {
+                color:rgb(255, 0, 0);
+            }
+            50% {
+                color:rgba(0,0,255,0);
+            }
+            100% {
+                color:rgb(255, 0, 0);
+            }
+        }
+    }
+}
+
+
+

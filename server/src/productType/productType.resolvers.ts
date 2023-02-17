@@ -12,5 +12,8 @@ module.exports = {
         name,
       });
     },
+    deleteProductType: (_, { name }) => {
+      return productTypeModel.deleteProductType(name);
+    },
   },
 };

@@ -1,0 +1,21 @@
+type Query {
+  reservs(sort: Int): [Reserv]
+}
+
+type Mutation {
+  cancelReserv(id: String!): Boolean
+}
+
+type Reserv {
+  id: String!
+  created: Float!
+  products: [ProductInOrder]!
+}
+
+type ProductInReserv {
+  title: String!
+  color: String!
+  size: Int!
+  quantity: Int!
+  price: Float!
+}

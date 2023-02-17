@@ -6,10 +6,12 @@ export type Product = {
   price: Number;
   allSizes: [Number];
   color: [Color];
+  url?: string;
 };
 
 export type Color = {
   name: string;
+  photos: string[];
   sizesAvailable: Sizes;
 };
 

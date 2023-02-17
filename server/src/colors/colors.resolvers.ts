@@ -2,8 +2,8 @@ import colorsModel from "./colors.model";
 
 module.exports = {
   Query: {
-    colors: () => {
-      return colorsModel.getAllColors();
+    colors: (_, { name }) => {
+      return colorsModel.getAllColors(name);
     },
   },
   Mutation: {
@@ -12,6 +12,9 @@ module.exports = {
         name,
         code,
       });
+    },
+    deleteColor: (_, { name }) => {
+      return colorsModel.deleteColor(name);
     },
   },
 };

@@ -1,0 +1,48 @@
+.wrapper{
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    border-bottom: 1px solid #e2e2e2;
+    padding: 10px;
+}
+
+.photo{
+    width: 200px;
+    height: 200px
+}
+
+.details{
+    padding: 10px;
+    font-size: 20px;
+    width: 100%;
+    position: relative;
+   &__title{
+        font-size: 24px;
+   } 
+   &__size{
+    font-size: 18px;
+    color: gray;
+   }
+   &__quantity{
+    border: none;
+    border-bottom: #e2e2e2 1px solid;
+    width: 40px;
+    outline: none;
+    &::-webkit-inner-spin-button{
+        -webkit-appearance: none;
+    }
+    &:focus{
+        border-bottom: #000 1px solid;
+    }
+   }
+   &__delete{
+    bottom: 13px;
+    position: absolute;
+    margin-left: 15px;
+    font-size: 24px;
+    &:hover{
+        color: rgb(141, 0, 0) !important;
+    }
+   }
+}

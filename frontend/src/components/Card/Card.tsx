@@ -1,61 +1,125 @@
-import React, { FC, useEffect, useState } from "react";
-import { Sizes } from "@/types/sizes";
+import React, {
+  Dispatch,
+  FC,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 
 import { BsFillBagPlusFill } from "react-icons/bs";
 
 import cl from "./Card.module.scss";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { ColorCard } from "@/types/card";
+import { CartProductType } from "@/types/cartProductType";
+import Image from "next/image";
+import ResizeDiv from "../ResizeDiv/ResizeDiv";
 
 interface CardProps {
-  name: string;
-  price: Number;
+  title: string;
+  price: number;
   url: string;
-  pictures: string[];
-  sizesAvailable: Sizes;
-  allSizes: Number[];
+  colors: ColorCard[];
+  allSizes: number[];
+  setCart?: Dispatch<SetStateAction<CartProductType[]>>;
 }
 
 const Card: FC<CardProps> = ({
-  name,
+  title,
   price,
   url,
-  pictures,
-  sizesAvailable,
+  colors,
   allSizes,
+  setCart,
 }) => {
-  const [picturesArray, setPictures] = useState(pictures);
+  const [colorsArray, setColors] = useState(colors);
+  const [activeSize, setActiveSize] = useState<number>(0);
+  const chooseInitSize = () => {
+    // @ts-expect-error
+    if (colorsArray[0].sizesAvailable[`_${activeSize}`]) return;
+    for (
+      let i = Math.floor((allSizes.length - 1) / 2), count = 1;
+      i !== allSizes.length - 1;
 
-  const changePicture = (e: React.MouseEvent<HTMLImageElement>) => {
-    const tempArray: string[] = picturesArray;
-    // @ts-ignore
-    let index = picturesArray.indexOf(e.target.src);
-    tempArray[index] = tempArray[0];
-    // @ts-ignore
-    tempArray[0] = e.target.src;
-    setPictures([...tempArray]);
+    ) {
+      const size = allSizes[i];
+      // @ts-expect-error
+      if (colorsArray[0].sizesAvailable[`_${size}`] !== 0) {
+        setActiveSize(size);
+        return;
+      } else if (i % 2) {
+        i = Math.floor((allSizes.length - 1) / 2) + Math.floor(count);
+        count += 0.5;
+      } else {
+        i = Math.floor((allSizes.length - 1) / 2) - Math.floor(count);
+        count += 0.5;
+      }
+    }
+  };
+
+  useEffect(chooseInitSize, [colorsArray]);
+
+  const changePicture = (index: number) => {
+    const tempArray = [...colorsArray];
+
+    [tempArray[0], tempArray[index]] = [tempArray[index], tempArray[0]];
+    setColors(tempArray);
+  };
+
+  const addToCart = () => {
+    // @ts-expect-error
+    setCart((prev) => {
+      const cart = [...prev];
+      for (let i = 0; i < prev.length; i++) {
+        if (
+          cart[i].title === title &&
+          cart[i].url === `${url}/${colorsArray[0].name}` &&
+          cart[i].size === activeSize
+        ) {
+          cart[i].quantity++;
+          localStorage.setItem("cart", JSON.stringify(cart));
+          return cart;
+        }
+      }
+      cart.push({
+        title,
+        price,
+        url: `${url}/${colorsArray[0].name}`,
+        color: colorsArray[0].name,
+        photo: colorsArray[0].photo,
+        size: activeSize,
+        quantity: 1,
+      });
+
+      localStorage.setItem("cart", JSON.stringify(cart));
+      return cart;
+    });
   };
   return (
     <>
       <div className={cl.card}>
-        <Link href={url}>
-          <img
-            className={cl.mainPicture}
-            src={picturesArray[0]}
-            alt={name + " - picture 1"}
-          />
-        </Link>
+        <ResizeDiv className={cl.mainPicture}>
+          <Link href={`${url}/${colorsArray[0].name}`}>
+            <Image
+              fill={true}
+              src={colorsArray[0].photo}
+              alt={title + " - picture 1"}
+            />
+          </Link>
+        </ResizeDiv>
         <div className={cl.miniPictures}>
-          {picturesArray.map((picture, i) => {
+          {colorsArray.map(({ photo }, i) => {
             if (i !== 0) {
-              const key = `${name} - picture ${i + 1}`;
+              const key = `${title} - picture ${i + 1}`;
               return (
-                <img
-                  src={picture}
-                  alt={key}
-                  key={key}
-                  onClick={changePicture}
-                />
+                <ResizeDiv className={cl.miniPicture} width={"30%"} key={key}>
+                  <Image
+                    src={photo}
+                    fill={true}
+                    alt={key}
+                    onClick={() => changePicture(i)}
+                  />
+                </ResizeDiv>
               );
             }
           })}
@@ -63,24 +127,32 @@ const Card: FC<CardProps> = ({
         <div className={cl.sizes}>
           {allSizes.map((size) => {
             //@ts-expect-error
-            const active = sizesAvailable[`_${size}`]
-              ? cl.size__active
-              : cl.size__unactive;
+            const available = colorsArray[0].sizesAvailable[`_${size}`]
+              ? cl.size__available
+              : cl.size__unavailable;
+            const active = size === activeSize ? cl.size__active : undefined;
             return (
-              //@ts-expect-error
-              <span key={size} className={`${cl.size} ${active}`}>
-                {size}
+              <span
+                key={size.toString()}
+                className={`${cl.size} ${available} ${active}`}
+                onClick={() => {
+                  // @ts-expect-error
+                  if (colorsArray[0].sizesAvailable[`_${size}`])
+                    setActiveSize(size);
+                }}
+              >
+                {size.toString()}
               </span>
             );
           })}
         </div>
         <div className={cl.details}>
           <div className={cl.details_col1}>
-            <div className={cl.name}>{name}</div>
+            <div className={cl.title}>{title}</div>
             <div className={cl.price}>${price.toString()}</div>
           </div>
           <div className={cl.details_col2}>
-            <BsFillBagPlusFill className={cl.shop} />
+            <BsFillBagPlusFill className={cl.shop} onClick={addToCart} />
           </div>
         </div>
       </div>

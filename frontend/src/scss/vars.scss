@@ -5,3 +5,47 @@ $secondary-color:#d8c4b3;
     -webkit-user-select: none;
     -ms-user-select: none;
   }
+.cross{
+  position: absolute;
+    width: 10px;
+    height: 20px;
+    top: -5px;
+    right: 25px;
+    cursor: pointer;
+    &::before{
+        content: "";
+        position: absolute;
+        left: 50%;
+        rotate: 45deg;
+        display: flex;
+        height: 100%;
+        width: 2px;
+        background-color: #222;
+    }
+    &::after{
+        content: "";
+        position: absolute;
+        left: 50%;
+        rotate: -45deg;
+        display: flex;
+        height: 100%;
+        width: 2px;
+        background-color: #222;
+        
+    }
+}
+.side_menu{
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  position: fixed;
+  top: 0;
+  right: -550px;
+  width: 500px;
+  padding: 20px 40px;
+  height: 100vh;
+  background-color: #fff;
+  box-shadow: -5px 0px 20px rgba(0, 0, 0, 0.3);
+  transition: 0.8s;
+  font-size: 24px;
+}

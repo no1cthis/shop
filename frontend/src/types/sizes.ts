@@ -12,3 +12,5 @@ export type Sizes = {
   _46?: Number;
   _47?: Number;
 };
+
+export const sizes = [36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47];

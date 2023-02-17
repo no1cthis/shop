@@ -1,6 +1,12 @@
 import { FETCH_PRODUCTS_WITH_FILTERS } from "@/graphQL/fetchList";
 import { Product } from "@/types/product";
-import { ApolloError, useLazyQuery } from "@apollo/client";
+import {
+  ApolloError,
+  DocumentNode,
+  LazyQueryHookOptions,
+  OperationVariables,
+  useLazyQuery,
+} from "@apollo/client";
 
 export const useFetchWithFilters = ({
   calculateLimits,
@@ -8,6 +14,8 @@ export const useFetchWithFilters = ({
   setError,
   setData,
   changePriceLimits,
+  apolloQuery,
+  dbName,
 }: {
   calculateLimits?: boolean;
   setLoading: (value: React.SetStateAction<boolean>) => void;
@@ -20,20 +28,27 @@ export const useFetchWithFilters = ({
     data: Product[];
     calculateLimits?: boolean | undefined;
   }) => void;
+  apolloQuery: DocumentNode;
+  dbName: string;
 }) => {
-  const [fetchProductsWithFilter] = useLazyQuery(FETCH_PRODUCTS_WITH_FILTERS, {
-    onCompleted: (fetchedData: { productsWithFilter: [Product] }) => {
-      //@ts-ignore
-      setData(fetchedData.productsWithFilter);
+  const [fetchProductsWithFilter] = useLazyQuery(apolloQuery, {
+    // @ts-expect-error
+    onCompleted: (fetchedData: { [dbName]: [Product] }) => {
+      // @ts-expect-error
+      setData(fetchedData[dbName]);
       if (calculateLimits && changePriceLimits)
         changePriceLimits({
-          data: fetchedData.productsWithFilter,
+          // @ts-expect-error
+          data: fetchedData[dbName],
           calculateLimits,
         });
       console.log(fetchedData);
       setLoading(false);
     },
-    onError: (error) => setError(error),
+    onError: (error) => {
+      console.log(error);
+      setError(error);
+    },
   });
 
   return fetchProductsWithFilter;

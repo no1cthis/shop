@@ -1,17 +1,18 @@
 import { Sizes } from "./sizes";
 export type Product = {
-  pictures: string[];
   title: string;
   price: number;
-  allSizes: Number[];
+  allSizes: number[];
   color: Color[];
   url: string;
   buyCount: number;
   description: string;
+  type: string;
 };
 
 export type Color = {
   name: string;
+  photos: string[];
   sizesAvailable: Sizes;
 };
 

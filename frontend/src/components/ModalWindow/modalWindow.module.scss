@@ -1,0 +1,30 @@
+@import '../../scss/vars.scss';
+
+.modal{
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 60vw;
+    min-height: 50vh;
+    background-color: rgba(225, 221, 221, 0.95);
+    border-radius: 20px;
+    z-index: 1000001;
+
+    &__wrapper{
+        position: fixed;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        top:0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.4);
+        z-index: 1000000;
+    }
+}
+.close{
+    @extend .cross;
+    top: 20px;
+}

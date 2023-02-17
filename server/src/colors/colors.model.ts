@@ -2,14 +2,15 @@ import { validator } from "../services/validator";
 import colorsCollection from "./colors.mongo";
 import { ColorChoose } from "./colorType";
 
-async function getAllColors() {
-  return await colorsCollection.find({}, { __v: 0 }).sort({ name: 1 });
+async function getAllColors(name: string) {
+  console.log(name);
+  return await colorsCollection
+    .find(name ? { name } : {}, { __v: 0 })
+    .sort({ name: 1 });
 }
 
 async function addNewColor(color: ColorChoose) {
   const { error, value } = validator.validateColor(color);
-
-  console.log(value, error);
   if (error) return { message: error.message, __typename: "Error" };
   color = {
     ...color,
@@ -26,5 +27,8 @@ async function addNewColor(color: ColorChoose) {
   );
   return color;
 }
+async function deleteColor(name: String) {
+  return (await colorsCollection.deleteOne({ name })).deletedCount > 0;
+}
 
-export default { getAllColors, addNewColor };
+export default { getAllColors, addNewColor, deleteColor };

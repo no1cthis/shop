@@ -1,4 +1,5 @@
 export type FilterType = {
+  title?: string;
   size: Map<number, number>;
   color: Map<string, string>;
   price: {

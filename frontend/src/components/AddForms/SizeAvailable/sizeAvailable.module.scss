@@ -1,0 +1,28 @@
+@import '../../../scss/vars.scss';
+
+.wrapper{
+    position: relative;
+}
+.size{
+    display: flex;
+    justify-content: space-around;
+    margin-top: 5px;
+    font-size: 20px;
+    input{
+        width: 50px;
+    }
+}
+.uploadImages{
+    display: flex;
+    justify-content: center;
+    background-color: #efefef;
+    border: #222 1px solid;
+    cursor: pointer;
+    &:hover{
+        background-color: #e8e8e8;
+    }
+    input{
+        display: none !important;
+    }
+    margin-top: 5px;
+}

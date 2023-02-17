@@ -1,0 +1,20 @@
+{
+  "name": "spaniel-shop",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "server": "cd server && nodemon server",
+    "frontend-build": "cd frontend && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/no1cthis/shop.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/no1cthis/shop/issues"
+  },
+  "homepage": "https://github.com/no1cthis/shop#readme"
+}

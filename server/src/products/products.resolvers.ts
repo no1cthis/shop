@@ -5,6 +5,9 @@ module.exports = {
     productByUrl: (_, { url }) => {
       return productsModel.getProductByUrl(url);
     },
+    productsByTitle: (_, { title }) => {
+      return productsModel.getProductsByTitle(title);
+    },
     productsWithFilter: (
       _,
       { minPrice, maxPrice, sortBy, sort, type, colors, sizes }
@@ -18,6 +21,12 @@ module.exports = {
         colors,
         sizes,
       });
+    },
+    cardsWithFilter: (_, filter) => {
+      return productsModel.getAllCardsFilter(filter);
+    },
+    checkAvailable: (_, filter) => {
+      return productsModel.checkAvailable(filter);
     },
   },
   Mutation: {
@@ -33,6 +42,15 @@ module.exports = {
         allSizes,
         color,
       });
+    },
+    editProduct: (_, product) => {
+      return productsModel.editProduct(product);
+    },
+    deleteProduct: (_, { url }) => {
+      return productsModel.deleteProduct(url);
+    },
+    buyProduct: (_, details) => {
+      return productsModel.buyProduct(details);
     },
   },
 };

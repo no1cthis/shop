@@ -1,5 +1,6 @@
 @import '../../scss/vars.scss';
 .color{
+    position: relative;
     display: flex;
     justify-content: center;
     margin: 0 auto;
@@ -15,6 +16,7 @@
     &:hover{
         box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
     }
+    
 
     &__name{
         display: flex;
@@ -22,10 +24,9 @@
     }
 
     &__wrapper{
+        position: relative;
         display: inline-block;
         flex-wrap: wrap;
-        // margin: 5px 20px 5px 0;
-        // width: fit-content;
     }
 
     &__active{
@@ -34,5 +35,14 @@
 
     &:active{
         transform: scale(0.75);
+    }
+}
+
+.delete{
+    @extend .cross;
+    opacity: 0;
+    transition: 0.5s;
+    &__active{
+        opacity: 100;
     }
 }

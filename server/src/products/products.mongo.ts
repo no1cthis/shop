@@ -39,6 +39,10 @@ const productsSchema = new mongoose.Schema({
         type: String,
         required: true,
       },
+      photos: {
+        type: [String],
+        required: true,
+      },
       sizesAvailable: {
         _36: {
           type: Number,
@@ -88,6 +92,8 @@ const productsSchema = new mongoose.Schema({
           type: Number,
           required: true,
         },
+        type: Object,
+        required: true,
       },
     },
   ],

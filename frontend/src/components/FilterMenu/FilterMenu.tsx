@@ -8,12 +8,14 @@ import { FilterType } from "../../types/filter";
 import cl from "./FilterMenu.module.scss";
 import SizePick from "../SizePick/SizePick";
 import ColorPick from "../ColorPick/ColorPick";
+import { sizes } from "@/types/sizes";
 
 interface FilterMenuProps {
   showMenu: boolean;
   setShowMenu: Dispatch<SetStateAction<boolean>>;
   filter: FilterType;
   setFilter: Dispatch<SetStateAction<FilterType>>;
+  typeToFetch?: string | boolean;
 }
 
 const FilterMenu: FC<FilterMenuProps> = ({
@@ -21,15 +23,23 @@ const FilterMenu: FC<FilterMenuProps> = ({
   setShowMenu,
   filter,
   setFilter,
+  typeToFetch,
 }) => {
   const router = useRouter();
+  const type =
+    typeof typeToFetch === "string"
+      ? typeToFetch
+      : typeToFetch === false
+      ? undefined
+      : router.asPath.slice(1);
+  // const router = useRouter();
   const [colors, setColors] = useState<[string, string][]>();
 
   useQuery<{
     productsWithFilter: [Product];
     colors: [{ name: String; code: String }];
   }>(FETCH_PRODUCTS_AND_COLOR, {
-    variables: { type: router.asPath.slice(1) },
+    variables: { type },
     onCompleted: (data) => {
       const colorsMap = new Map();
       data.productsWithFilter.forEach((product) => {
@@ -68,8 +78,8 @@ const FilterMenu: FC<FilterMenuProps> = ({
         break;
     }
   };
-  const allSizes = [36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47];
-  const sizesFilter = allSizes.map((size) => (
+
+  const sizesFilter = sizes.map((size) => (
     <SizePick
       size={size}
       active={!!filter.size.get(size)}

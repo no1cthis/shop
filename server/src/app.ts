@@ -3,6 +3,8 @@ import morgan from "morgan";
 import cors from "cors";
 import path from "path";
 import dotenv from "dotenv";
+import bodyParser from "body-parser";
+import stripe from "./stripe/stripe";
 
 dotenv.config();
 const app = express();
@@ -18,10 +20,16 @@ app.use(
 );
 //@ts-ignore
 app.use(morgan("common"));
+app.use("/payment/webhook", bodyParser.raw({ type: "*/*" }));
+app.use(bodyParser.json({ limit: "10mb" }));
+app.use(bodyParser.urlencoded({ extended: true, limit: "10mb" }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "..", "public")));
-// app.get('/*', (req, res) => {
-//     res.sendFile(path.join(__dirname, '..', 'public', 'index.html'))
-// })
+app.use("/photos", express.static("photos"));
+app.use("/payment", stripe);
+// app.use(express.static(path.join(__dirname, "..", "public")));
+app.get("./photos/:name", (req, res) => {
+  res.download(path.join("./photos", req.params.name));
+  // res.sendFile(path.join(__dirname, '..', 'public', 'index.html'))
+});
 
 export default app;
