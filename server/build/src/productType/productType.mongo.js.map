@@ -1,0 +1,1 @@
+{"version":3,"file":"productType.mongo.js","sourceRoot":"","sources":["../../../src/productType/productType.mongo.ts"],"names":[],"mappings":";;;;;AAAA,wDAAgC;AAEhC,MAAM,iBAAiB,GAAG,IAAI,kBAAQ,CAAC,MAAM,CAAC;IAC5C,IAAI,EAAE;QACJ,IAAI,EAAE,MAAM;QACZ,QAAQ,EAAE,IAAI;KACf;CACF,CAAC,CAAC;AAEH,kBAAe,kBAAQ,CAAC,KAAK,CAAC,cAAc,EAAE,iBAAiB,CAAC,CAAC"}
