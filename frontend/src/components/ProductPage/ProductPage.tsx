@@ -11,7 +11,6 @@ import { useLazyQuery, useQuery } from "@apollo/client";
 import { useRouter } from "next/router";
 import { Product } from "@/types/product";
 import { FETCH_PRODUCTS_BY_URL } from "@/graphQL/fetchList";
-import Container from "../Container/Container";
 import cl from "./productPage.module.scss";
 import { Sizes } from "@/types/sizes";
 import Image from "next/image";
@@ -104,29 +103,22 @@ const ProductPage: FC<{
     if (!detailsRef.current || loading) return;
     chooseInitSize();
 
-    const scroll = () => {
+    const onScroll = () => {
       if (
+        window.scrollY + window.innerHeight >=
+          document.body.scrollHeight - 100 &&
         // @ts-expect-error
-        parseFloat(window.getComputedStyle(detailsRef.current).height) <
-        0.9 * window.innerHeight
+        detailsRef.current.scrollTop > 50
       ) {
-        setChangeHeight(
-          window.scrollY + window.innerHeight >=
-            document.body.scrollHeight - 100
-            ? "small"
-            : ""
-        );
-        return;
-      }
-      setChangeHeight(
-        window.scrollY + window.innerHeight >= document.body.scrollHeight - 100
-          ? "big"
-          : ""
-      );
+        setChangeHeight("big");
+      } else setChangeHeight("small");
     };
-    window.addEventListener("scroll", scroll);
+    // @ts-expect-error
+    detailsRef.current.addEventListener("scroll", onScroll);
+    window.addEventListener("scroll", onScroll);
+
     return () => {
-      window.removeEventListener("scroll", scroll);
+      window.removeEventListener("scroll", onScroll);
     };
   }, [loading]);
 
@@ -157,10 +149,12 @@ const ProductPage: FC<{
   };
 
   const photoArray = mainPhotos.map((photo, i) => (
-    <ResizeDiv width={i === 0 ? "100%" : "50%"} key={photo}>
+    <ResizeDiv
+      width={window.innerWidth > 990 && i === 0 ? "100%" : "50%"}
+      key={photo}
+    >
       <div
         key={photo}
-        className={cl.photo}
         onClick={() => {
           openModal(i);
         }}
@@ -169,8 +163,6 @@ const ProductPage: FC<{
       </div>
     </ResizeDiv>
   ));
-
-  console.log(router.asPath);
 
   const otherColorsElems = otherColorsPhotos.map((color) => (
     <Link
@@ -237,6 +229,15 @@ const ProductPage: FC<{
     });
   };
 
+  const upperCase = (text: string) => {
+    return text
+      .split(" ")
+      .map(
+        (word) => word.slice(0, 1).toUpperCase() + word.slice(1).toLowerCase()
+      )
+      .join(" ");
+  };
+
   if (!data)
     return (
       <>
@@ -250,7 +251,9 @@ const ProductPage: FC<{
     <>
       <div className={cl.wrapper}>
         {!data && <Loading />}
-        <div className={cl.photos}>{photoArray}</div>
+        {window.innerWidth > 990 && (
+          <div className={cl.photos}>{photoArray}</div>
+        )}
         <div
           ref={detailsRef}
           className={`${cl.details} ${
@@ -261,7 +264,7 @@ const ProductPage: FC<{
               : undefined
           }`}
         >
-          <div className={cl.details__title}>{data?.title}</div>
+          <div className={cl.details__title}>{upperCase(data?.title)}</div>
           <div className={cl.details__color}>
             {
               // @ts-expect-error
@@ -269,6 +272,9 @@ const ProductPage: FC<{
             }
           </div>
           <div className={cl.details__price}>${data?.price.toFixed(2)}</div>
+          {window.innerWidth < 990 && (
+            <div className={cl.photos}>{photoArray}</div>
+          )}
           <div className={cl.details__description}>{`Sizes:`}</div>
           <div className={cl.details__sizes}>{sizes}</div>
           <div className={cl.details__description}>{data?.description}</div>

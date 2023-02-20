@@ -47,15 +47,6 @@ async function getAllProductsFilter({
   const result = await productCollection
     .find(filter, { __v: 0 })
     .sort({ [sortBy]: sort });
-
-  // result.map((product) => {
-  //   const demoPhotos = [];
-  //   product.color.forEach((color) => {
-  //     demoPhotos.push(color.photos[0]);
-  //   });
-  //   // @ts-expect-error
-  //   product.demoPhotos = demoPhotos;
-  // });
   return result;
 }
 
@@ -76,6 +67,7 @@ async function getAllCardsFilter({
   colors: string[];
   sizes: number[];
 }) {
+  const cardsPerPage = 12;
   const filter: {
     price: {
       $gte: number;
@@ -95,7 +87,7 @@ async function getAllCardsFilter({
   if (type) filter.type = type;
 
   const result = await productCollection
-    .find(filter, { __v: 0 }) // NOT CHECKED!!!!!!!!!!!!!!!!!!!!!!!!!!!!! { __v: 0, title: 1, price: 1, url: 1, color: 1, allSizes: 1 }
+    .find(filter, { __v: 0 })
     .sort({ [sortBy]: sort });
 
   result.forEach((product) => {
@@ -106,12 +98,10 @@ async function getAllCardsFilter({
       return color;
     });
   });
-  console.log(result);
   return result;
 }
 
 async function getProductByUrl(url: string) {
-  console.log(url);
   return await productCollection.findOne(
     {
       url,
@@ -131,7 +121,8 @@ async function getProductsByTitle(title: string) {
       },
       { __v: 0 }
     )
-    .sort({ buyCount: 1 });
+    .sort({ buyCount: 1 })
+    .limit(5);
 }
 
 async function addNewProduct(product: Product) {
@@ -155,37 +146,38 @@ async function addNewProduct(product: Product) {
     "/" +
     convert(title, { separator: "-", transformer: TITLECASE_TRANSFORMER });
 
-  const pathToImage = path.join("./photos", url);
-  if (!fs.existsSync("./photos")) fs.mkdirSync("./photos");
-  if (!fs.existsSync(path.join("./photos", type)))
-    fs.mkdirSync(path.join("./photos", type));
-  if (!fs.existsSync(pathToImage)) fs.mkdirSync(pathToImage);
-  console.log(111);
-  product.color.forEach((color) => {
-    const { name: colorName, photos } = color;
-    color.photos = photos.map((photo) => {
-      const fileName = nanoid() + ".webp";
-      console.log(color.name);
-      if (!fs.existsSync(path.join(pathToImage, colorName)))
-        fs.mkdirSync(path.join(pathToImage, colorName));
-      let buff = Buffer.from(photo.split(";base64,").pop(), "base64");
-      sharp(buff)
-        .webp()
-        .toBuffer()
-        .then((newBuffer) => {
-          fs.writeFileSync(
-            path.join(pathToImage, colorName, fileName),
-            newBuffer,
-            {
-              encoding: "base64",
-            }
-          );
-        });
+  try {
+    const pathToImage = path.join("./photos", url);
+    if (!fs.existsSync("./photos")) fs.mkdirSync("./photos");
+    if (!fs.existsSync(path.join("./photos", type)))
+      fs.mkdirSync(path.join("./photos", type));
+    if (!fs.existsSync(pathToImage)) fs.mkdirSync(pathToImage);
+    product.color.forEach((color) => {
+      const { name: colorName, photos } = color;
+      color.photos = photos.map((photo) => {
+        const fileName = nanoid() + ".webp";
+        if (!fs.existsSync(path.join(pathToImage, colorName)))
+          fs.mkdirSync(path.join(pathToImage, colorName));
+        let buff = Buffer.from(photo.split(";base64,").pop(), "base64");
+        sharp(buff)
+          .webp()
+          .toBuffer()
+          .then((newBuffer) => {
+            fs.writeFileSync(
+              path.join(pathToImage, colorName, fileName),
+              newBuffer,
+              {
+                encoding: "base64",
+              }
+            );
+          });
 
-      console.log(`${process.env.BACKEND_URL}/${pathToImage}/${fileName}`);
-      return `${process.env.BACKEND_URL}photos/${url}/${colorName}/${fileName}`;
+        return `${process.env.BACKEND_URL}photos/${url}/${colorName}/${fileName}`;
+      });
     });
-  });
+  } catch (err) {
+    console.log(err.message);
+  }
   const newProduct = {
     ...product,
     title: title.slice(0, 1).toUpperCase() + title.slice(1).toLowerCase(),
@@ -325,7 +317,6 @@ async function buyProduct({
 }: {
   title: String;
   quantity: number;
-  colorName: string;
 }) {
   await productCollection.findOneAndUpdate(
     {
@@ -357,8 +348,6 @@ async function reservProduct({
     },
     { _id: 0 }
   );
-
-  console.log(product);
 
   product.color = product.color.map((color) => {
     if (color.name !== colorName) return color;

@@ -4,6 +4,7 @@ type Query {
 
 type Mutation {
   cancelReserv(id: String!): Boolean
+  cancelAllOlderThanReserv(olderThan: Float!): Boolean
 }
 
 type Reserv {

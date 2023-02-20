@@ -76,7 +76,7 @@ router.post("/create-checkout-session", async (req, res) => {
     line_items,
     mode: "payment",
     success_url: `${process.env.FRONTEND_URL}/payment-success`,
-    cancel_url: `${process.env.FRONTEND_URL}/payment-denied`,
+    cancel_url: `${process.env.FRONTEND_URL}/all`,
   });
 
   reservModel.addNewReserv({
@@ -136,11 +136,18 @@ router.post(
         created: Date.now(),
         status: "Not sent",
       };
+      console.log(data.metadata.reservedId, order);
       await orderModel.addNewOrder(order);
       await reservModel.cancelReserv({
         id: data.metadata.reservedId,
         notReturnToStock: true,
       });
+      for (let i = 0; i < order.products.length; i++) {
+        await productsModel.buyProduct({
+          title: order.products[i].title,
+          quantity: order.products[i].quantity,
+        });
+      }
     }
 
     // return 200

@@ -26,10 +26,8 @@ app.use(bodyParser.urlencoded({ extended: true, limit: "10mb" }));
 app.use(express.json());
 app.use("/photos", express.static("photos"));
 app.use("/payment", stripe);
-// app.use(express.static(path.join(__dirname, "..", "public")));
 app.get("./photos/:name", (req, res) => {
   res.download(path.join("./photos", req.params.name));
-  // res.sendFile(path.join(__dirname, '..', 'public', 'index.html'))
 });
 
 export default app;

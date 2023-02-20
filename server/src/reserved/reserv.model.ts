@@ -27,8 +27,6 @@ async function cancelReserv({
 }) {
   const reserv = await reservCollection.findOne({ id });
 
-  console.log(id, reserv);
-
   for (let i = 0; i < reserv.products.length; i++) {
     const { title, color: colorName, quantity, size } = reserv.products[i];
     await productsModel.reservProduct({
@@ -45,6 +43,14 @@ async function cancelReserv({
   return true;
 }
 
+async function cancelAllOlderThanReserv(olderThan: number) {
+  await reservCollection.deleteMany({
+    created: { $lt: olderThan },
+  });
+
+  return true;
+}
+
 async function getAllReservs({ sort = -1 }: { sort: 1 | -1 }) {
   const result = await reservCollection
     .find({}, { __v: 0 })
@@ -53,4 +59,9 @@ async function getAllReservs({ sort = -1 }: { sort: 1 | -1 }) {
   return result;
 }
 
-export default { addNewReserv, cancelReserv, getAllReservs };
+export default {
+  addNewReserv,
+  cancelReserv,
+  getAllReservs,
+  cancelAllOlderThanReserv,
+};

@@ -163,7 +163,7 @@ const AddProductForm: FC<AddProductProps> = ({
       setColorList={setColorList}
     />
   ));
-  console.log(productTypeList);
+
   const productTypeListElems = useMemo(
     () =>
       productTypeList?.map((type) => (
@@ -232,7 +232,6 @@ const AddProductForm: FC<AddProductProps> = ({
 
   const [deleteProductTypeMutation] = useMutation(DELETE_PRODUCT_TYPE, {
     onCompleted: (data, err) => {
-      console.log(data, err);
       if (!data.deleteProductType || err) {
         window.alert(`Error: type has not been deleted`);
         return;

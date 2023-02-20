@@ -25,12 +25,14 @@ export const useFilter = ({
   dbName: string;
 }) => {
   const router = useRouter();
+  const fetchNext = useRef(true);
   const initRender = useRef(true);
   const filterHistory = useRef({
     sizes: new Map<number, number>(),
     colors: new Map<string, string>(),
   });
   const fetchBlock = useRef<boolean>(false);
+  const type = usingRouter ? router.asPath.slice(1) : undefined;
 
   const [data, setData] = useState<any>();
   const [filter, setFilter] = useState<FilterType>({
@@ -149,7 +151,7 @@ export const useFilter = ({
     return array;
   };
 
-  const fetch = ({
+  const fetch = async ({
     fetchFunc,
     maxPrice,
     minPrice,
@@ -174,11 +176,9 @@ export const useFilter = ({
     colors?: string[];
     sizes?: number[];
   }) => {
-    console.log(filter);
-    const type = usingRouter ? router.asPath.slice(1) : undefined;
     switch (sort) {
       case "Best sellers":
-        fetchFunc({
+        await fetchFunc({
           variables: {
             minPrice,
             maxPrice,
@@ -192,7 +192,7 @@ export const useFilter = ({
         });
         break;
       case "Price low to high":
-        fetchFunc({
+        await fetchFunc({
           variables: {
             minPrice,
             maxPrice,
@@ -206,7 +206,7 @@ export const useFilter = ({
 
         break;
       case "Price high to low":
-        fetchFunc({
+        await fetchFunc({
           variables: {
             minPrice,
             maxPrice,
@@ -220,7 +220,7 @@ export const useFilter = ({
         });
         break;
       case "Type":
-        fetchFunc({
+        await fetchFunc({
           variables: {
             minPrice,
             maxPrice,
@@ -246,7 +246,7 @@ export const useFilter = ({
         });
         break;
       default:
-        fetchFunc({
+        await fetchFunc({
           variables: {
             minPrice,
             maxPrice,
@@ -258,6 +258,36 @@ export const useFilter = ({
           fetchPolicy: "no-cache",
         });
     }
+  };
+
+  const fetchWithFilters = async () => {
+    const colors = checkFilter(filterHistory.current.colors, filter.color);
+    const sizes = checkFilter(filterHistory.current.sizes, filter.size);
+    const fetchFunc =
+      colors && sizes ? fetchWithoutChangeLimits : fetchWithChangeLimits;
+
+    filterHistory.current.colors = filter.color;
+    filterHistory.current.sizes = filter.size;
+
+    setLoading(true);
+
+    await fetch({
+      fetchFunc,
+      maxPrice:
+        filter.price.max === filter.price.higherPrice ||
+        colors?.length ||
+        sizes?.length
+          ? undefined
+          : filter.price.max,
+      minPrice:
+        filter.price.min === filter.price.lowerPrice ||
+        colors?.length ||
+        sizes?.length
+          ? undefined
+          : filter.price.min,
+      colors,
+      sizes,
+    });
   };
 
   useEffect(() => {
@@ -277,7 +307,10 @@ export const useFilter = ({
 
   useEffect(() => {
     if (/\/\[/.test(router.asPath) || loading || filter.title) return;
+    fetchBlock.current = true;
+
     setLoading(true);
+    fetchNext.current = true;
 
     fetch({ fetchFunc: fetchWithChangeLimits });
   }, [router.asPath, sort]);
@@ -288,43 +321,11 @@ export const useFilter = ({
       fetchBlock.current = false;
       return;
     }
-    const timer = setTimeout(() => {
-      const colors = checkFilter(filterHistory.current.colors, filter.color);
-      const sizes = checkFilter(filterHistory.current.sizes, filter.size);
-      const fetchFunc =
-        colors && sizes ? fetchWithoutChangeLimits : fetchWithChangeLimits;
-
-      filterHistory.current.colors = filter.color;
-      filterHistory.current.sizes = filter.size;
-
-      setLoading(true);
-
-      fetch({
-        fetchFunc,
-        maxPrice:
-          filter.price.max === filter.price.higherPrice ||
-          colors?.length ||
-          sizes?.length
-            ? undefined
-            : filter.price.max,
-        minPrice:
-          filter.price.min === filter.price.lowerPrice ||
-          colors?.length ||
-          sizes?.length
-            ? undefined
-            : filter.price.min,
-        colors,
-        sizes,
-      });
-      console.log(
-        "fetch",
-        filter.price.max === filter.price.higherPrice || colors || sizes
-      );
-    }, 1500);
+    const timer = setTimeout(fetchWithFilters, 1500);
     return () => {
       clearTimeout(timer);
     };
   }, [filter.price.min, filter.price.max, filter.color, filter.size]);
 
-  return { data, setSort, filter, setFilter, loading, error };
+  return { data, setSort, filter, setFilter, loading, error, sort };
 };

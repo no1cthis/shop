@@ -3,8 +3,8 @@
     position: fixed;
     background-color: #fff;
     width: 100%;
-    height: 57px;
-    top:-100px;
+    height: 100px;
+    top:-150px;
     box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.2);
     padding-top: 6px;
     z-index: 999;
@@ -17,20 +17,20 @@
     @extend .cross;
     top: 15px;
     right: 50px;
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
 }
 .searchBar{
     position: relative;
     display: flex;
     width: 50%;
     margin:  auto;
-    min-height: 40px;
+    min-height: 60px;
     justify-content: center;
     align-items: flex-end;
     padding-bottom: 5px;
     border-bottom: #000 1px solid;
-    font-size: 20px;
+    font-size: 30px;
     input{
         width: 100%;
         border: none;
@@ -38,7 +38,7 @@
         padding-left: 5px;
     }
     .icon{
-        font-size: 20px;
+        font-size: 30px;
     }
 }
 .results{
@@ -54,5 +54,32 @@
         min-height: 10px;
         max-height: 9999px;
         transition: all 0.5s cubic-bezier(1,0,1,0);
+    }
+}
+
+@media (max-width: 2000px) {
+    .wrapper{
+        height: 57px;
+    }
+    .searchBar{
+        min-height: 40px;
+        font-size: 20px;
+        .icon{
+            font-size: 20px;
+        }
+    }
+
+    .close{
+        @extend .cross;
+        top: 15px;
+        right: 50px;
+        width: 30px;
+        height: 30px;
+    }
+}
+
+@media (max-width: 768px) {
+    .searchBar{
+        width: 80%;
     }
 }

@@ -7,12 +7,16 @@
     padding: 10px;
     border-top: 1px rgba($color: gray, $alpha: 0.2) solid;
     border-bottom: 1px rgba($color: gray, $alpha: 0.2) solid;
+    font-size: 30px;
+    select{
+        outline: none;
+    }
 }
 .filter{
     display: flex;
     align-items: center;
     color: white;
-    font-size: 20px;
+    font-size: 30px;
     background-color: black;
     padding: 5px;
     transition: 0.3s;
@@ -24,7 +28,7 @@
     }
 }
 .icon{
-    font-size: 16px;
+    font-size: 26px;
 }
 .sort{
     margin-left: 20px;
@@ -36,3 +40,20 @@
     margin-left: 20px;
 }
 
+@media (max-width: 2000px) {
+    .filter{
+        font-size: 20px;
+    }
+    .icon{
+        font-size: 16px;
+    }
+    .wrapper{
+        font-size: 16px;
+    }
+}
+@media (max-width: 450px) {
+    .num{
+        display: none;
+    }
+}
+        

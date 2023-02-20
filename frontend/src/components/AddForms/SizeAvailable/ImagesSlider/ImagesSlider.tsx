@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Dispatch, FC, SetStateAction, useState } from "react";
 import { AiFillCloseCircle } from "react-icons/ai";
 import cl from "./imagesSlider.module.scss";
@@ -22,8 +23,10 @@ const ImagesSlider: FC<ImagesSliderProps> = ({ images, setImages }) => {
           >
             <AiFillCloseCircle />
           </span>
-          <img
+          <Image
             className={`${cl.image} ${i === overImageIndex && cl.overDrag}`}
+            width={230}
+            height={230}
             src={image}
             alt={`image-${i + 1}`}
             draggable={true}

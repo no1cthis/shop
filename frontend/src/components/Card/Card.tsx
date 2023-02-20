@@ -148,7 +148,10 @@ const Card: FC<CardProps> = ({
         </div>
         <div className={cl.details}>
           <div className={cl.details_col1}>
-            <div className={cl.title}>{title}</div>
+            <Link href={`${url}/${colorsArray[0].name}`} className={cl.title}>
+              {title}
+            </Link>
+
             <div className={cl.price}>${price.toString()}</div>
           </div>
           <div className={cl.details_col2}>

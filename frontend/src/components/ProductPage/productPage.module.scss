@@ -6,7 +6,6 @@
     padding: 0 50px 0 100px;
     position: relative;
     min-height:10vh;
-    // background-color: gray;
 }
 .photos{
     width: 50%;
@@ -18,28 +17,6 @@
     display: flex;
     justify-content: space-evenly;
     overflow: hidden;
-}
-.arrow {
-  border: solid gray;
-  border-width: 0px 10px 10px 0px;
-  display: inline-block;
-  height: 100px;
-  width: 100px;
-  padding: 3px;
-  transition: 0.3s;
-  cursor: pointer;
-  z-index: -1;
-  &:hover{
-    border: solid black;
-    border-width: 0px 10px 10px 0px;
-  }
-
-}
-.left{
-    transform: rotate(45deg + 90deg);
-}
-.right{
-    transform: rotate(-45deg);
 }
 
 .details{
@@ -79,7 +56,6 @@
     }
 }
 .addToCart{
-    // margin: 20px 0 150px;
     width: 100%;
     padding: 20px;
     cursor: pointer;
@@ -99,4 +75,42 @@
 }
 .smallUp{
     transform: translateY(-50px);
+}
+
+@media (max-width: 1300px) {
+    .details__otherColors{
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (max-width: 990px) {
+
+    .wrapper{
+        flex-direction: column;
+        padding: 0;
+    }
+    .photos{
+        display: flex;
+        width: 100%;
+    }
+    .photo{
+        width: 10px !important;
+    }
+    .details{
+        position: static;
+        padding: 0;
+        width: 100%;
+        max-height: fit-content;
+    }
+    .bigUp{
+        transform: translateY(0px);
+    }
+    .smallUp{
+        transform: translateY(0px);
+    }
+}
+@media (max-width: 500px) {
+    .details__otherColors{
+       display: flex;
+       flex-wrap: wrap;
+    }
 }

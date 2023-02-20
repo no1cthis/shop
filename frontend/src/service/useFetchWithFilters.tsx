@@ -7,6 +7,7 @@ import {
   OperationVariables,
   useLazyQuery,
 } from "@apollo/client";
+import { Dispatch, SetStateAction } from "react";
 
 export const useFetchWithFilters = ({
   calculateLimits,
@@ -42,7 +43,6 @@ export const useFetchWithFilters = ({
           data: fetchedData[dbName],
           calculateLimits,
         });
-      console.log(fetchedData);
       setLoading(false);
     },
     onError: (error) => {

@@ -1,5 +1,6 @@
 import { validator } from "../services/validator";
 import colorsCollection from "./colors.mongo";
+import productCollection from "../products/products.mongo";
 import { ColorChoose } from "./colorType";
 
 async function getAllColors(name: string) {
@@ -28,7 +29,20 @@ async function addNewColor(color: ColorChoose) {
   return color;
 }
 async function deleteColor(name: String) {
-  return (await colorsCollection.deleteOne({ name })).deletedCount > 0;
+  return (await colorsCollection.deleteMany({ name })).deletedCount > 0;
 }
 
-export default { getAllColors, addNewColor, deleteColor };
+async function getColorsByType(type) {
+  const result = [];
+  const names = await productCollection
+    .find(type === "all" ? {} : { type })
+    .distinct("color.name");
+  for (let i = 0; i < names.length; i++)
+    result.push(
+      await colorsCollection.findOne({ name: names[i] }, { name: 1, code: 1 })
+    );
+
+  return result;
+}
+
+export default { getAllColors, addNewColor, deleteColor, getColorsByType };

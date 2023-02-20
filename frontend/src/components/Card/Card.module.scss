@@ -27,10 +27,8 @@
     margin-top: 2px;
 }
 .miniPicture{
-    width: 20%;
     margin-right: 5px;
     cursor: pointer;
-    // object-fit: contain;
 }
 .sizes{
     opacity: 0;
@@ -45,7 +43,7 @@
 .size{
     margin-right: 10px;
     font-weight: bold;
-    font-size: 16px;
+    font-size: 26px;
     cursor: pointer;
     &__unavailable{
         text-decoration: line-through;
@@ -86,20 +84,36 @@
 .title{
     margin-top: 20px;
     display: flex;
-    font-size: 24px;
+    font-size: 28px;
     text-transform: uppercase;
     cursor: pointer;
 }
 .price{
     margin-top: 10px;
     font-weight: bold;
-    font-size: 18px;
+    font-size: 24px;
     cursor: default;
 }
 .shop{
     margin-top: auto;
     color: white;
     padding: 10px;
-    font-size: 30px;
+    font-size: 50px;
     cursor: pointer;
+}
+
+@media (max-width: 2000px) {
+    .size{
+        font-size: 16px;
+    }
+    .title{
+        font-size: 24px;
+        width:85%;
+    }
+    .price{
+        font-size: 18px;
+    }
+    .shop{
+        font-size: 30px;
+    }
 }

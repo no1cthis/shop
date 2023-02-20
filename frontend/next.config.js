@@ -19,7 +19,11 @@ module.exports = {
 
 module.exports = {
   images: {
-    domains: ["cdn.dribbble.com", "localhost"],
+    domains: [
+      "cdn.dribbble.com",
+      "localhost",
+      process.env.NEXT_PUBLIC_BACKEND_URL,
+    ],
   },
 };
 

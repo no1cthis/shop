@@ -1,20 +1,5 @@
 import { gql } from "@apollo/client";
 
-const FETCH_PRODUCTS_AND_COLOR = gql`
-  query productsWithFilter($sortBy: String, $type: String) {
-    productsWithFilter(sortBy: $sortBy, type: $type) {
-      allSizes
-      color {
-        name
-      }
-    }
-    colors {
-      name
-      code
-    }
-  }
-`;
-
 const FETCH_PRODUCTS_WITH_FILTERS = gql`
   query CardsWithFilter(
     $minPrice: Float
@@ -65,7 +50,7 @@ const FETCH_PRODUCTS_WITH_FILTERS = gql`
 `;
 
 const FETCH_CARDS_WITH_FILTERS = gql`
-  query CardsWithFilter(
+  query ProductsWithFilter(
     $minPrice: Float
     $maxPrice: Float
     $sortBy: String
@@ -180,6 +165,15 @@ const FETCH_COLORS = gql`
   }
 `;
 
+const FETCH_COLORS_BY_TYPE = gql`
+  query ColorsByType($type: String!) {
+    colorsByType(type: $type) {
+      name
+      code
+    }
+  }
+`;
+
 const FETCH_PRODUCT_TYPES = gql`
   query AllProductTypes {
     allProductTypes {
@@ -250,12 +244,12 @@ const FETCH_RESERVED = gql`
 `;
 
 export {
-  FETCH_PRODUCTS_AND_COLOR,
   FETCH_PRODUCTS_WITH_FILTERS,
   FETCH_CARDS_WITH_FILTERS,
   FETCH_PRODUCTS_BY_TITLE,
   FETCH_PRODUCTS_BY_URL,
   FETCH_COLORS,
+  FETCH_COLORS_BY_TYPE,
   FETCH_PRODUCT_TYPES,
   FETCH_ORDERS,
   FETCH_RESERVED,

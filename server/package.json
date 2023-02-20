@@ -16,15 +16,18 @@
     "nodemon": "^2.0.20",
     "sharp": "^0.31.3",
     "stripe": "^11.10.0",
-    "url-slug": "^3.0.4"
+    "url-slug": "^3.0.4",
+    "pm2": "^5.2.2",
+    "rimraf": "^4.1.2"
   },
   "scripts": {
     "start": "npm run build && node build/server.js",
+    "start-docker":"node build/server.js",
     "build": "rimraf ./build && tsc",
     "dev": "npx nodemon",
     "test": "jest",
     "test-watch": "jest --watchAll --detectOpenHandles",
-    "cluster": "pm2 start server.js -i max"
+    "cluster": "pm2 start build/server.js -i max"
   },
   "name": "server",
   "version": "1.0.0",

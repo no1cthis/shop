@@ -2,13 +2,14 @@ import { Product } from "@/types/product";
 import { useQuery } from "@apollo/client";
 import { useRouter } from "next/router";
 import { FC, Dispatch, SetStateAction, useState } from "react";
-import { FETCH_PRODUCTS_AND_COLOR } from "../../graphQL/fetchList";
+import { FETCH_COLORS, FETCH_COLORS_BY_TYPE } from "../../graphQL/fetchList";
 import PriceSlider from "../PriceSlider/PriceSlider";
 import { FilterType } from "../../types/filter";
 import cl from "./FilterMenu.module.scss";
 import SizePick from "../SizePick/SizePick";
 import ColorPick from "../ColorPick/ColorPick";
 import { sizes } from "@/types/sizes";
+import { ColorChoose } from "@/types/colorChoose";
 
 interface FilterMenuProps {
   showMenu: boolean;
@@ -32,33 +33,15 @@ const FilterMenu: FC<FilterMenuProps> = ({
       : typeToFetch === false
       ? undefined
       : router.asPath.slice(1);
-  // const router = useRouter();
-  const [colors, setColors] = useState<[string, string][]>();
+  const [colors, setColors] = useState<ColorChoose[]>();
 
-  useQuery<{
-    productsWithFilter: [Product];
-    colors: [{ name: String; code: String }];
-  }>(FETCH_PRODUCTS_AND_COLOR, {
+  useQuery(type ? FETCH_COLORS_BY_TYPE : FETCH_COLORS, {
     variables: { type },
-    onCompleted: (data) => {
-      const colorsMap = new Map();
-      data.productsWithFilter.forEach((product) => {
-        product.color.forEach((color) => {
-          //@ts-ignore
-          colorsMap.set(
-            color.name,
-            data.colors.find(
-              (colorFromData) => color.name === colorFromData.name
-            )?.code
-          );
-          if (colorsMap.size === data.colors.length) {
-            setColors(Array.from(colorsMap));
-            return;
-          }
-        });
-      });
-      console.log(data);
-      setColors(Array.from(colorsMap));
+    onCompleted: (
+      data: { colorsByType: ColorChoose[] } | { colors: ColorChoose[] }
+    ) => {
+      // @ts-expect-error
+      setColors(data[type ? "colorsByType" : "colors"]);
     },
   });
 
@@ -90,11 +73,11 @@ const FilterMenu: FC<FilterMenuProps> = ({
 
   const colorsFilter = colors?.map((color) => (
     <ColorPick
-      name={color[0]}
-      colorCode={color[1]}
-      active={!!filter.color.get(color[0])}
+      name={color.name}
+      colorCode={color.code}
+      active={!!filter.color.get(color.name)}
       setFilter={changeFilter}
-      key={color[1]}
+      key={color.name}
     />
   ));
 

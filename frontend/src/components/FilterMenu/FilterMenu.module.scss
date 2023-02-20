@@ -7,12 +7,12 @@
     display: flex;
     margin: 0px auto -10px;
     width: fit-content;
-    font-size: 36px;
+    font-size: 56px;
     font-weight: 900;
 }
 .filters__title{
     margin-top: 20px;
-    font-size: 18px;
+    font-size: 28px;
     text-transform: uppercase;
     color: grey;
 }
@@ -26,10 +26,17 @@
 }
 .colors{
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns:  repeat(4, 1fr);
     row-gap: 10px;
 }
 
 
-
+@media (max-width: 600px) {
+    .menu{
+        width: 100%;
+    }
+    .colors{
+        grid-template-columns:  repeat(3, 1fr);
+    }
+}
 

@@ -5,6 +5,9 @@ module.exports = {
     colors: (_, { name }) => {
       return colorsModel.getAllColors(name);
     },
+    colorsByType: (_, { type }) => {
+      return colorsModel.getColorsByType(type);
+    },
   },
   Mutation: {
     addNewColor: (_, { name, code }) => {

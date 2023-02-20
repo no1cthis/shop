@@ -1,6 +1,7 @@
 #import from "../graphQL/globalTypes.graphql"
 type Query {
   colors(name: String): [ColorChoose]
+  colorsByType(type: String!): [ColorChoose]
 }
 
 type Mutation {

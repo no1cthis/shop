@@ -13,6 +13,7 @@ interface FilterProps {
   typeToFetch?: string | boolean;
   isAdminPanel?: boolean;
   searchBar?: boolean;
+  showQuantity?: number;
 }
 
 const Filter: FC<FilterProps> = ({
@@ -23,6 +24,7 @@ const Filter: FC<FilterProps> = ({
   typeToFetch,
   isAdminPanel,
   searchBar,
+  showQuantity,
 }) => {
   const [showMenu, setShowMenu] = useState(false);
   const optionsArray = useMemo(
@@ -48,16 +50,15 @@ const Filter: FC<FilterProps> = ({
       />
       <div className={cl.wrapper}>
         <div className={cl.filter} onClick={() => setShowMenu(!showMenu)}>
-          {
-            <span className={cl.icon}>
-              <GoSettings />
-            </span>
-          }
+          <span className={cl.icon}>
+            <GoSettings />
+          </span>
           &nbsp; Filter
         </div>
         <div>
           <span className={cl.num}>
-            {quantity} {quantity === 1 ? `product` : `products`}
+            {showQuantity ? `${showQuantity} of ` : null} {quantity}{" "}
+            {quantity === 1 ? `product` : `products`}
           </span>
           {searchBar && (
             <input

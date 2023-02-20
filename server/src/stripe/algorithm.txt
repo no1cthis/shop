@@ -1,3 +1,3 @@
 1. install stripe CLI
 2. login to stripe
-3. get your STRIPE_SECRET stripe listen --forward-to localhost:8000/{path to webhook}/webhook
+3. get your STRIPE_SECRET and listen:  stripe listen --forward-to localhost:${server port}/{path to webhook}/webhook

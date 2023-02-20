@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "server": "cd server && nodemon server",
-    "frontend-build": "cd frontend && npm run build"
+    "frontend-build": "cd frontend && npm run build",
+    "deploy":"npm start --prefix frontend && node build/server.js --prefix server"
   },
   "repository": {
     "type": "git",

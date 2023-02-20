@@ -8,12 +8,12 @@ export type Order = {
 };
 
 type ProductInOrder = {
-  title: String;
-  color: String;
+  title: string;
+  color: string;
   size: number;
   price: number;
   quantity: number;
-  photo: String;
+  photo: string;
 };
 
 type Customer = {

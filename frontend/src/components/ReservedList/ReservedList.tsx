@@ -1,5 +1,8 @@
 import { FETCH_RESERVED } from "@/graphQL/fetchList";
-import { CANCEL_RESERV } from "@/graphQL/mutationList";
+import {
+  CANCEL_ALL_OLDER_THAN_RESERVS,
+  CANCEL_RESERV,
+} from "@/graphQL/mutationList";
 import { Reserved } from "@/types/reserved";
 import { useMutation, useQuery } from "@apollo/client";
 import { FC, useRef, useState } from "react";
@@ -9,6 +12,7 @@ import cl from "./reservedList.module.scss";
 
 const ReservedList: FC = () => {
   const [reserved, setReserved] = useState<Reserved[]>([]);
+  const [days, setDays] = useState<number>(0);
   const number = useRef(-1);
   const [cancelReserv] = useMutation(CANCEL_RESERV, {
     onCompleted: (data) => {
@@ -32,8 +36,28 @@ const ReservedList: FC = () => {
     fetchPolicy: "network-only",
   });
 
+  const [cancelAllOlderThan] = useMutation(CANCEL_ALL_OLDER_THAN_RESERVS, {
+    onCompleted: () =>
+      setReserved((prev) =>
+        prev.filter((reserv) => reserv.created > Date.now() - 86400000 * days)
+      ),
+    onError: (err) => alert(err.message),
+  });
+
+  const cancelReserved = () => {
+    if (
+      !confirm(
+        `Are you sure you want to cancel all older than ${days} ${
+          days === 1 ? `day` : `days`
+        } reservs?`
+      )
+    )
+      return;
+    const trashhold = Date.now() - 86400000 * days;
+    cancelAllOlderThan({ variables: { olderThan: trashhold } });
+  };
+
   const reservedElems = reserved?.map((reserv, i) => {
-    console.log(reserv);
     const date = new Date(reserv.created);
     return (
       <div className={cl.reserv} key={reserv.id}>
@@ -77,6 +101,19 @@ const ReservedList: FC = () => {
     return <div className={cl.empty}>So far, it&apos;s empty.</div>;
   return (
     <div className={cl.wrapper}>
+      <div className={cl.delete}>
+        <button onClick={cancelReserved}>Cancel</button> all older than{" "}
+        <input
+          value={days}
+          type="number"
+          // @ts-expect-error
+          onChange={(e) => setDays(e.target.value)}
+          onBlur={(e) => {
+            if (e.target.value === "") setDays(0);
+          }}
+        />{" "}
+        day
+      </div>
       {loading && <Loading />}
       {reservedElems}
     </div>

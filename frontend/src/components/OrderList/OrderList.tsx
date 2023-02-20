@@ -21,7 +21,6 @@ const OrderList: FC = () => {
   const [fetchOrders, { loading }] = useLazyQuery(FETCH_ORDERS, {
     onCompleted: (data) => {
       setOrders(data.orders);
-      console.log(data.orders);
     },
     onError: (err) => {
       alert(err.message);

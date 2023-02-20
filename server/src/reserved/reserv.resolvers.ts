@@ -10,5 +10,8 @@ module.exports = {
     cancelReserv: (_, { id }) => {
       return reservModel.cancelReserv({ id });
     },
+    cancelAllOlderThanReserv: (_, { olderThan }) => {
+      return reservModel.cancelAllOlderThanReserv(olderThan);
+    },
   },
 };

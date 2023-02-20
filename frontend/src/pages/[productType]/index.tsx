@@ -4,7 +4,7 @@ import Layout from "@/components/Layout/Layout";
 import { useRouter } from "next/router";
 import { CartProductType } from "@/types/cartProductType";
 
-const Sneakers: FC = () => {
+const ProductTypePage: FC = () => {
   const router = useRouter();
   const [cart, setCart] = useState<CartProductType[]>([]);
 
@@ -32,4 +32,4 @@ const Sneakers: FC = () => {
   );
 };
 
-export default Sneakers;
+export default ProductTypePage;

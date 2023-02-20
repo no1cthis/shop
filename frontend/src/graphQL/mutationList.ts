@@ -155,6 +155,12 @@ const CANCEL_RESERV = gql`
   }
 `;
 
+const CANCEL_ALL_OLDER_THAN_RESERVS = gql`
+  mutation Mutation($olderThan: Float!) {
+    cancelAllOlderThanReserv(olderThan: $olderThan)
+  }
+`;
+
 export {
   ADD_COLOR,
   DELETE_COLOR,
@@ -165,4 +171,5 @@ export {
   DELETE_PRODUCT_TYPE,
   EDIT_ORDER,
   CANCEL_RESERV,
+  CANCEL_ALL_OLDER_THAN_RESERVS,
 };

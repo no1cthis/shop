@@ -1,4 +1,12 @@
-import React, { Dispatch, FC, SetStateAction, useEffect, useMemo } from "react";
+import React, {
+  Dispatch,
+  FC,
+  SetStateAction,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Card from "../Card/Card";
 import { Product } from "../../types/product";
 import cl from "./List.module.scss";
@@ -17,20 +25,47 @@ interface ListProps {
 
 const List: FC<ListProps> = ({ setCart }) => {
   const router = useRouter();
+  const [page, setPage] = useState(-1);
+
   let usingRouter = useMemo(
-    () => !(router.asPath.split("/").pop() === "sales"),
+    () => !(router.asPath.split("/").pop() === "all"),
     [router.asPath]
   );
-  const { data, filter, loading, error, setFilter, setSort } = useFilter({
+
+  const { data, filter, loading, error, setFilter, setSort, sort } = useFilter({
     usingRouter,
     apolloQuery: FETCH_CARDS_WITH_FILTERS,
     dbName: `cardsWithFilter`,
   });
 
+  useEffect(() => {
+    const addPage = () => {
+      if (
+        window.scrollY + window.innerHeight >
+          document.body.scrollHeight - 100 &&
+        page < Math.round(data?.length / 12)
+      ) {
+        setPage((prev) => prev + 1);
+      }
+    };
+
+    window.addEventListener("scroll", addPage);
+
+    return () => {
+      window.removeEventListener("scroll", addPage);
+    };
+  }, [page]);
+
+  useEffect(() => {
+    if (!data) return;
+    setPage(1);
+  }, [data]);
+
   if (!loading && error) {
     return <>{error.message}</>;
   }
-  const cards = data?.map((card: CardType) => {
+
+  const cards = data?.slice(0, page * 12).map((card: CardType) => {
     return (
       <Card
         title={card.title}
@@ -47,6 +82,7 @@ const List: FC<ListProps> = ({ setCart }) => {
     <Container>
       <div>
         <Filter
+          showQuantity={cards?.length}
           quantity={data?.length || 0}
           setSort={setSort}
           filter={filter}
