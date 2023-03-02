@@ -1,7 +1,14 @@
 import { Product } from "@/types/product";
 import { useQuery } from "@apollo/client";
 import { useRouter } from "next/router";
-import { FC, Dispatch, SetStateAction, useState } from "react";
+import {
+  FC,
+  Dispatch,
+  SetStateAction,
+  useState,
+  useCallback,
+  useMemo,
+} from "react";
 import { FETCH_COLORS, FETCH_COLORS_BY_TYPE } from "../../graphQL/fetchList";
 import PriceSlider from "../PriceSlider/PriceSlider";
 import { FilterType } from "../../types/filter";
@@ -45,41 +52,52 @@ const FilterMenu: FC<FilterMenuProps> = ({
     },
   });
 
-  const changeFilter = (value: string | number, filterType?: string) => {
-    switch (filterType) {
-      case "size":
-        const size = new Map(filter.size);
-        if (size.get(Number(value))) size.delete(Number(value));
-        else size.set(Number(value), Number(value));
-        setFilter({ ...filter, size });
-        break;
-      case "color":
-        const color = new Map(filter.color);
-        if (color.get(value.toString())) color.delete(value.toString());
-        else color.set(value.toString(), value.toString());
-        setFilter({ ...filter, color });
-        break;
-    }
-  };
+  const changeFilter = useCallback(
+    (value: string | number, filterType?: string) => {
+      switch (filterType) {
+        case "size":
+          const size = new Map(filter.size);
+          if (size.get(Number(value))) size.delete(Number(value));
+          else size.set(Number(value), Number(value));
+          setFilter({ ...filter, size });
+          break;
+        case "color":
+          const color = new Map(filter.color);
+          if (color.get(value.toString())) color.delete(value.toString());
+          else color.set(value.toString(), value.toString());
+          setFilter({ ...filter, color });
+          break;
+      }
+    },
+    [filter]
+  );
 
-  const sizesFilter = sizes.map((size) => (
-    <SizePick
-      size={size}
-      active={!!filter.size.get(size)}
-      setFilter={changeFilter}
-      key={size}
-    />
-  ));
+  const sizesFilter = useMemo(
+    () =>
+      sizes.map((size) => (
+        <SizePick
+          size={size}
+          active={!!filter.size.get(size)}
+          setFilter={changeFilter}
+          key={size}
+        />
+      )),
+    [sizes]
+  );
 
-  const colorsFilter = colors?.map((color) => (
-    <ColorPick
-      name={color.name}
-      colorCode={color.code}
-      active={!!filter.color.get(color.name)}
-      setFilter={changeFilter}
-      key={color.name}
-    />
-  ));
+  const colorsFilter = useMemo(
+    () =>
+      colors?.map((color) => (
+        <ColorPick
+          name={color.name}
+          colorCode={color.code}
+          active={!!filter.color.get(color.name)}
+          setFilter={changeFilter}
+          key={color.name}
+        />
+      )),
+    [colors]
+  );
 
   return (
     <div

@@ -34,11 +34,15 @@ const Filter: FC<FilterProps> = ({
       ),
     []
   );
-  const optionsElems = optionsArray.map((text) => (
-    <option value={text} key={text}>
-      {text}
-    </option>
-  ));
+  const optionsElems = useMemo(
+    () =>
+      optionsArray.map((text) => (
+        <option value={text} key={text}>
+          {text}
+        </option>
+      )),
+    []
+  );
   return (
     <Container>
       <FilterMenu

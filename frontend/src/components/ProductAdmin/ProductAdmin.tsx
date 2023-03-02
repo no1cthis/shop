@@ -8,11 +8,7 @@ import { MdDelete } from "react-icons/md";
 import { AiFillSave } from "react-icons/ai";
 import cl from "./productAdmin.module.scss";
 import { useMutation, useQuery } from "@apollo/client";
-import {
-  FETCH_COLORS,
-  FETCH_PRODUCTS_WITH_FILTERS,
-  FETCH_PRODUCT_TYPES,
-} from "@/graphQL/fetchList";
+import { FETCH_COLORS, FETCH_PRODUCT_TYPES } from "@/graphQL/fetchList";
 import { DELETE_PRODUCT, EDIT_PRODUCT } from "@/graphQL/mutationList";
 import ModalWindow from "../ModalWindow/ModalWindow";
 import ColorPick from "../ColorPick/ColorPick";
@@ -28,16 +24,12 @@ const ProductAdmin: FC<ProductAdminProps> = ({
   setProducts,
   setQuantity,
 }) => {
-  const {
-    data: typesList,
-    loading: typesLoading,
-    error: typesError,
-  } = useQuery<{ allProductTypes: { name: string }[] }>(FETCH_PRODUCT_TYPES);
-  const {
-    data: colorList,
-    loading: colorLoading,
-    error: colorError,
-  } = useQuery<{ colors: { name: string; code: string }[] }>(FETCH_COLORS);
+  const { data: typesList } = useQuery<{ allProductTypes: { name: string }[] }>(
+    FETCH_PRODUCT_TYPES
+  );
+  const { data: colorList } = useQuery<{
+    colors: { name: string; code: string }[];
+  }>(FETCH_COLORS);
   const deletedColors = useRef(new Map());
 
   const { title, description, price, color, allSizes, type, url } = product;
@@ -177,7 +169,6 @@ const ProductAdmin: FC<ProductAdminProps> = ({
     EDIT_PRODUCT,
     {
       onCompleted: (data, err) => {
-        console.log(data, err);
         if (data.editProduct.message) {
           window.alert(`Error: ${data.editProduct.message}`);
           return;
@@ -228,7 +219,6 @@ const ProductAdmin: FC<ProductAdminProps> = ({
     DELETE_PRODUCT,
     {
       onCompleted: (data) => {
-        console.log(data);
         if (!data.deleteProduct) {
           window.alert(`Error: product has not been deleted`);
           return;

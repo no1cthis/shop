@@ -10,6 +10,7 @@ import {
   Dispatch,
   SetStateAction,
   useRef,
+  useCallback,
 } from "react";
 import { AiOutlineDown } from "react-icons/ai";
 import ImagesSlider from "./ImagesSlider/ImagesSlider";
@@ -46,12 +47,15 @@ const SizeAvailable: FC<SizeAvailableProps> = ({
     _47: 0,
   });
 
-  const onChangeInput = (e: ChangeEvent<HTMLInputElement>, size: string) => {
-    setSizes({
-      ...sizes,
-      [size]: Number(e.target.value) || 0,
-    });
-  };
+  const onChangeInput = useCallback(
+    (e: ChangeEvent<HTMLInputElement>, size: string) => {
+      setSizes({
+        ...sizes,
+        [size]: Number(e.target.value) || 0,
+      });
+    },
+    [sizes]
+  );
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -84,26 +88,29 @@ const SizeAvailable: FC<SizeAvailableProps> = ({
     );
   });
 
-  const uploadImages = (files: FileList | null) => {
-    if (!files) return;
+  const uploadImages = useCallback(
+    (files: FileList | null) => {
+      if (!files) return;
 
-    const convertToBase64 = (file: any) => {
-      return new Promise((resolve, reject) => {
-        const fr = new FileReader();
-        fr.onerror = reject;
-        fr.onload = () => {
-          resolve(fr.result);
-        };
-        fr.readAsDataURL(file);
-      });
-    };
+      const convertToBase64 = (file: any) => {
+        return new Promise((resolve, reject) => {
+          const fr = new FileReader();
+          fr.onerror = reject;
+          fr.onload = () => {
+            resolve(fr.result);
+          };
+          fr.readAsDataURL(file);
+        });
+      };
 
-    Promise.all(Array.prototype.map.call(files, convertToBase64)).then(
-      (newPhotos) => {
-        setPhotos([...photos, ...newPhotos]);
-      }
-    );
-  };
+      Promise.all(Array.prototype.map.call(files, convertToBase64)).then(
+        (newPhotos) => {
+          setPhotos([...photos, ...newPhotos]);
+        }
+      );
+    },
+    [photos]
+  );
 
   return (
     <div className={cl.wrapper}>

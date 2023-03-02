@@ -11,6 +11,7 @@
 # next.js
 **/.next/
 **/out/
+**/build/
 
 
 # misc
@@ -25,7 +26,8 @@ yarn-error.log*
 
 # local env files
 .env*.local
-.env
+**/.env
+server/.env
 
 # vercel
 .vercel

@@ -4,11 +4,9 @@ import React, {
   SetStateAction,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 import Card from "../Card/Card";
-import { Product } from "../../types/product";
 import cl from "./List.module.scss";
 import Container from "../Container/Container";
 import Filter from "../Filter/Filter";

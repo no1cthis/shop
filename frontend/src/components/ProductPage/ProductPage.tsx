@@ -2,12 +2,13 @@ import {
   Dispatch,
   FC,
   SetStateAction,
+  useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
-import Layout from "@/components/Layout/Layout";
-import { useLazyQuery, useQuery } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 import { useRouter } from "next/router";
 import { Product } from "@/types/product";
 import { FETCH_PRODUCTS_BY_URL } from "@/graphQL/fetchList";
@@ -41,7 +42,6 @@ const ProductPage: FC<{
   const router = useRouter();
   const [fetchByURL, { loading }] = useLazyQuery(FETCH_PRODUCTS_BY_URL, {
     onCompleted: ({ productByUrl }: { productByUrl: Product }) => {
-      console.log(productByUrl);
       setData(productByUrl);
 
       let otherColors: { name: string; photo: string }[] = [];
@@ -57,7 +57,7 @@ const ProductPage: FC<{
     },
   });
 
-  const chooseInitSize = () => {
+  const chooseInitSize = useCallback(() => {
     if (!data) return;
     const { allSizes } = data;
     for (
@@ -78,9 +78,10 @@ const ProductPage: FC<{
         count += 0.5;
       }
     }
-  };
+  }, [data]);
 
   useEffect(() => {
+    if (!router.query.product) return;
     fetchByURL({
       variables: {
         url: `${router.query.productType}/${router.query.product}`,
@@ -122,77 +123,98 @@ const ProductPage: FC<{
     };
   }, [loading]);
 
-  const openModal = (i: number) => {
-    setImageForModal(mainPhotos[i]);
-    setModalActive(true);
-  };
+  const openModal = useCallback(
+    (i: number) => {
+      setImageForModal(mainPhotos[i]);
+      setModalActive(true);
+    },
+    [mainPhotos]
+  );
 
-  const zoom = (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
-    // @ts-expect-error
-    const x = e.clientX - e.target.offsetLeft;
-    // @ts-expect-error
-    const y = e.clientY - e.target.offsetTop;
-    // @ts-expect-error
-    e.target.style.transformOrigin = `${x}px ${y}px`;
-    // @ts-expect-error
-    e.target.style.transform = `scale(2)`;
-  };
-
-  const zoomOut = (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
-    // @ts-expect-error
-    timer.current = setTimeout(() => {
+  const zoom = useCallback(
+    (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
       // @ts-expect-error
-      e.target.style.transformOrigin = `center`;
+      const x = e.clientX - e.target.offsetLeft;
       // @ts-expect-error
-      e.target.style.transform = `scale(1)`;
-    }, 300);
-  };
+      const y = e.clientY - e.target.offsetTop;
+      // @ts-expect-error
+      e.target.style.transformOrigin = `${x}px ${y}px`;
+      // @ts-expect-error
+      e.target.style.transform = `scale(2)`;
+    },
+    []
+  );
 
-  const photoArray = mainPhotos.map((photo, i) => (
-    <ResizeDiv
-      width={window.innerWidth > 990 && i === 0 ? "100%" : "50%"}
-      key={photo}
-    >
-      <div
-        key={photo}
-        onClick={() => {
-          openModal(i);
-        }}
-      >
-        <Image src={photo} alt={`photo-${i + 1}`} fill />
-      </div>
-    </ResizeDiv>
-  ));
-
-  const otherColorsElems = otherColorsPhotos.map((color) => (
-    <Link
-      href={`${process.env.NEXT_PUBLIC_FRONTEND_URL}/${router.query.productType}/${router.query.product}/${color.name}`}
-      key={color.photo}
-      className={cl.colors__photo}
-    >
-      <Image
-        width={200}
-        height={200}
-        alt={`This product in ${color.name} color`}
-        src={color.photo}
-      />
-    </Link>
-  ));
-
-  const sizes = data?.allSizes.map((size) => {
-    return (
-      <SizePick
-        size={size}
-        active={size === activeSize}
+  const zoomOut = useCallback(
+    (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
+      // @ts-expect-error
+      timer.current = setTimeout(() => {
         // @ts-expect-error
-        setFilter={availableSizes[`_${size}`] ? setActiveSize : undefined}
-        key={size}
-        fontSize={22}
-      />
-    );
-  });
+        e.target.style.transformOrigin = `center`;
+        // @ts-expect-error
+        e.target.style.transform = `scale(1)`;
+      }, 300);
+    },
+    []
+  );
 
-  const addToCart = () => {
+  const photoArray = useMemo(
+    () =>
+      mainPhotos.map((photo, i) => (
+        <ResizeDiv
+          width={window.innerWidth > 990 && i === 0 ? "100%" : "50%"}
+          key={photo}
+        >
+          <div
+            key={photo}
+            onClick={() => {
+              openModal(i);
+            }}
+          >
+            <Image src={photo} alt={`photo-${i + 1}`} fill />
+          </div>
+        </ResizeDiv>
+      )),
+    [mainPhotos]
+  );
+
+  const otherColorsElems = useMemo(
+    () =>
+      otherColorsPhotos.map((color) => (
+        <Link
+          href={`${process.env.NEXT_PUBLIC_FRONTEND_URL}/${router.query.productType}/${router.query.product}/${color.name}`}
+          key={color.photo}
+          className={cl.colors__photo}
+        >
+          <Image
+            width={200}
+            height={200}
+            alt={`This product in ${color.name} color`}
+            src={color.photo}
+          />
+        </Link>
+      )),
+    [otherColorsPhotos]
+  );
+
+  const sizes = useMemo(
+    () =>
+      data?.allSizes.map((size) => {
+        return (
+          <SizePick
+            size={size}
+            active={size === activeSize}
+            // @ts-expect-error
+            setFilter={availableSizes[`_${size}`] ? setActiveSize : undefined}
+            key={size}
+            fontSize={22}
+          />
+        );
+      }),
+    [data, activeSize]
+  );
+
+  const addToCart = useCallback(() => {
     setCart((prev) => {
       const color = router.query.color;
       if (!data || !color) return prev;
@@ -227,7 +249,7 @@ const ProductPage: FC<{
       localStorage.setItem("cart", JSON.stringify(cart));
       return cart;
     });
-  };
+  }, [data, activeSize]);
 
   const upperCase = (text: string) => {
     return text

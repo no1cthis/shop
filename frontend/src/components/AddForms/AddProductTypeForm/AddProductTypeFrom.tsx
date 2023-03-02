@@ -1,7 +1,14 @@
 import { ADD_PRODUCT_TYPE } from "@/graphQL/mutationList";
 import { addToDatabase } from "@/service/addToDatabase";
 import { useMutation } from "@apollo/client";
-import { Dispatch, FC, FormEvent, SetStateAction, useState } from "react";
+import {
+  Dispatch,
+  FC,
+  FormEvent,
+  SetStateAction,
+  useCallback,
+  useState,
+} from "react";
 import cl from "../addForms.module.scss";
 
 interface AddProductTypeFormProps {
@@ -28,14 +35,17 @@ const AddProductTypeForm: FC<AddProductTypeFormProps> = ({
     },
     onError: (err) => setProductTypeAddResultMessage(err.message),
   });
-  const addProductType = (e: FormEvent) => {
-    e.preventDefault();
-    if (productTypeList && productTypeList.length > 5) {
-      alert("Max 5 type.");
-      return;
-    }
-    addProductTypeMutation({ variables: { name: productTypeToAdd } });
-  };
+  const addProductType = useCallback(
+    (e: FormEvent) => {
+      e.preventDefault();
+      if (productTypeList && productTypeList.length > 5) {
+        alert("Max 5 type.");
+        return;
+      }
+      addProductTypeMutation({ variables: { name: productTypeToAdd } });
+    },
+    [productTypeToAdd]
+  );
   return (
     <form className={cl.form} onSubmit={addProductType}>
       <div className={cl.container__title}>Add Type</div>

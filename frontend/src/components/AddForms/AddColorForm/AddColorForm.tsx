@@ -30,6 +30,7 @@ const AddColorForm: FC<{
       setTimeout(() => setColorAddResultMessage(""), 5000);
     },
   });
+
   const addColor = (e: FormEvent) => {
     e.preventDefault();
     addColorMutation({ variables: colorToAdd });

@@ -25,7 +25,7 @@ const ShopBasket: FC<ShopBasketProps> = ({
       product={product}
       setCart={setCart}
       number={i}
-      key={product.url}
+      key={`${product.url}-${product.size}`}
     />
   ));
   const totalPrice = useMemo(() => {
@@ -43,7 +43,6 @@ const ShopBasket: FC<ShopBasketProps> = ({
         cart
       )
       .then((res) => {
-        console.log(res);
         if (res.data.url) window.location.href = res.data.url;
         else if (res.data.err) {
           setModalText(res.data.err);

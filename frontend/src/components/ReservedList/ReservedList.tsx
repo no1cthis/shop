@@ -5,7 +5,7 @@ import {
 } from "@/graphQL/mutationList";
 import { Reserved } from "@/types/reserved";
 import { useMutation, useQuery } from "@apollo/client";
-import { FC, useRef, useState } from "react";
+import { FC, useCallback, useRef, useState } from "react";
 import Loading from "../Loading/Loading";
 import Menu from "../menu/Menu";
 import cl from "./reservedList.module.scss";
@@ -44,7 +44,7 @@ const ReservedList: FC = () => {
     onError: (err) => alert(err.message),
   });
 
-  const cancelReserved = () => {
+  const cancelReserved = useCallback(() => {
     if (
       !confirm(
         `Are you sure you want to cancel all older than ${days} ${
@@ -55,7 +55,7 @@ const ReservedList: FC = () => {
       return;
     const trashhold = Date.now() - 86400000 * days;
     cancelAllOlderThan({ variables: { olderThan: trashhold } });
-  };
+  }, [days]);
 
   const reservedElems = reserved?.map((reserv, i) => {
     const date = new Date(reserv.created);

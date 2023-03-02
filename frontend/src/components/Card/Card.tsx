@@ -2,6 +2,7 @@ import React, {
   Dispatch,
   FC,
   SetStateAction,
+  useCallback,
   useEffect,
   useState,
 } from "react";
@@ -34,7 +35,7 @@ const Card: FC<CardProps> = ({
 }) => {
   const [colorsArray, setColors] = useState(colors);
   const [activeSize, setActiveSize] = useState<number>(0);
-  const chooseInitSize = () => {
+  const chooseInitSize = useCallback(() => {
     // @ts-expect-error
     if (colorsArray[0].sizesAvailable[`_${activeSize}`]) return;
     for (
@@ -55,18 +56,21 @@ const Card: FC<CardProps> = ({
         count += 0.5;
       }
     }
-  };
+  }, [colorsArray]);
 
   useEffect(chooseInitSize, [colorsArray]);
 
-  const changePicture = (index: number) => {
-    const tempArray = [...colorsArray];
+  const changePicture = useCallback(
+    (index: number) => {
+      const tempArray = [...colorsArray];
 
-    [tempArray[0], tempArray[index]] = [tempArray[index], tempArray[0]];
-    setColors(tempArray);
-  };
+      [tempArray[0], tempArray[index]] = [tempArray[index], tempArray[0]];
+      setColors(tempArray);
+    },
+    [colorsArray]
+  );
 
-  const addToCart = () => {
+  const addToCart = useCallback(() => {
     // @ts-expect-error
     setCart((prev) => {
       const cart = [...prev];
@@ -94,7 +98,7 @@ const Card: FC<CardProps> = ({
       localStorage.setItem("cart", JSON.stringify(cart));
       return cart;
     });
-  };
+  }, [activeSize]);
   return (
     <>
       <div className={cl.card}>

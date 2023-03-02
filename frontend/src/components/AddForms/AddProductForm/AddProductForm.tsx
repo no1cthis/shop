@@ -14,6 +14,7 @@ import {
   FormEvent,
   Dispatch,
   SetStateAction,
+  useCallback,
 } from "react";
 import SizeAvailable from "../SizeAvailable/SizeAvailable";
 import cl from "../addForms.module.scss";
@@ -75,14 +76,17 @@ const AddProductForm: FC<AddProductProps> = ({
   );
   const [addProductResultMessage, setAddProductResultMessage] = useState("");
 
-  const changeChoosedColors = (value: string | number) => {
-    setChoosedColors((prev) => {
-      const copy = new Map(prev);
-      if (copy.get(value.toString())) copy.delete(value.toString());
-      else copy.set(value.toString(), true);
-      return copy;
-    });
-  };
+  const changeChoosedColors = useCallback(
+    (value: string | number) => {
+      setChoosedColors((prev) => {
+        const copy = new Map(prev);
+        if (copy.get(value.toString())) copy.delete(value.toString());
+        else copy.set(value.toString(), true);
+        return copy;
+      });
+    },
+    [choosedColors]
+  );
 
   useEffect(() => {
     const map = new Map(sizesToSell);
@@ -97,12 +101,15 @@ const AddProductForm: FC<AddProductProps> = ({
     setSizesToSell(map);
   }, [stock]);
 
-  const onClickSize = (value: string | number) => {
-    const temp = new Map(sizesToSell);
-    if (temp.get(Number(value))) temp.delete(Number(value));
-    else temp.set(Number(value), Number(value));
-    setSizesToSell(temp);
-  };
+  const onClickSize = useCallback(
+    (value: string | number) => {
+      const temp = new Map(sizesToSell);
+      if (temp.get(Number(value))) temp.delete(Number(value));
+      else temp.set(Number(value), Number(value));
+      setSizesToSell(temp);
+    },
+    [sizesToSell]
+  );
 
   const addProductInputs = Object.entries(inputs).map((input) => {
     if (input[0] === "type") return;
@@ -153,16 +160,20 @@ const AddProductForm: FC<AddProductProps> = ({
     );
   });
 
-  const colorListElems = colorList?.map((color) => (
-    <ColorPick
-      name={color.name}
-      colorCode={color.code}
-      active={!!choosedColors.get(color.name)}
-      setFilter={changeChoosedColors}
-      key={color.name}
-      setColorList={setColorList}
-    />
-  ));
+  const colorListElems = useMemo(
+    () =>
+      colorList?.map((color) => (
+        <ColorPick
+          name={color.name}
+          colorCode={color.code}
+          active={!!choosedColors.get(color.name)}
+          setFilter={changeChoosedColors}
+          key={color.name}
+          setColorList={setColorList}
+        />
+      )),
+    [colorList]
+  );
 
   const productTypeListElems = useMemo(
     () =>
@@ -174,26 +185,32 @@ const AddProductForm: FC<AddProductProps> = ({
     [productTypeList]
   );
 
-  const stockByColors = Array.from(choosedColors, (color) => color[0]).map(
-    (color) => (
-      <SizeAvailable
-        key={color}
-        color={color}
-        stock={stock}
-        setStock={setStock}
-      />
-    )
+  const stockByColors = useMemo(
+    () =>
+      Array.from(choosedColors, (color) => color[0]).map((color) => (
+        <SizeAvailable
+          key={color}
+          color={color}
+          stock={stock}
+          setStock={setStock}
+        />
+      )),
+    [choosedColors]
   );
-  const sizesFilter = allSizes.map((size) => {
-    return (
-      <SizePick
-        size={size}
-        active={!sizesToSell.get(size)}
-        setFilter={onClickSize}
-        key={size}
-      />
-    );
-  });
+  const sizesFilter = useMemo(
+    () =>
+      allSizes.map((size) => {
+        return (
+          <SizePick
+            size={size}
+            active={!sizesToSell.get(size)}
+            setFilter={onClickSize}
+            key={size}
+          />
+        );
+      }),
+    [allSizes, sizesToSell]
+  );
 
   const [addProductMutation] = useMutation(ADD_PRODUCT, {
     onCompleted: (data) => {
@@ -247,14 +264,14 @@ const AddProductForm: FC<AddProductProps> = ({
     onError: (err) => window.alert(`Error: ${err}`),
   });
 
-  const deleteType = () => {
+  const deleteType = useCallback(() => {
     const { type } = inputs;
     if (window.confirm(`Do you really want to delete ${type} type?`)) {
       deleteProductTypeMutation({
         variables: { name: type.toLowerCase() },
       });
     }
-  };
+  }, [inputs]);
 
   return (
     <form className={cl.form} onSubmit={addProduct}>

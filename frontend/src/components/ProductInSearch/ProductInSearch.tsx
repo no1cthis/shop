@@ -30,10 +30,6 @@ const ProductInSearch: FC<{
     fetchColor({ variables: { name: colors[i.current] } });
   }, []);
 
-  useEffect(() => {
-    console.log(colors, colorList);
-  }, [colorList]);
-
   const colorsElem = colorList.map((el) => (
     <Link
       key={el.name}

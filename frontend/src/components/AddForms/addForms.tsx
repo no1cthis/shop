@@ -1,6 +1,5 @@
 import { ColorChoose } from "@/types/colorChoose";
 import { FC, useState, useEffect } from "react";
-import Container from "../Container/Container";
 import cl from "./addForms.module.scss";
 import { useQuery } from "@apollo/client";
 import { FETCH_COLORS, FETCH_PRODUCT_TYPES } from "@/graphQL/fetchList";

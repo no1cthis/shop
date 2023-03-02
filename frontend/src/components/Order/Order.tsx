@@ -54,7 +54,6 @@ const Order: FC<{
   });
 
   const handleStatus = () => {
-    console.log(loading);
     if (loading) return;
     if (!setOrders || typeof number === "undefined") return;
 
