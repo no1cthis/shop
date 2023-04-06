@@ -76,17 +76,14 @@ const AddProductForm: FC<AddProductProps> = ({
   );
   const [addProductResultMessage, setAddProductResultMessage] = useState("");
 
-  const changeChoosedColors = useCallback(
-    (value: string | number) => {
-      setChoosedColors((prev) => {
-        const copy = new Map(prev);
-        if (copy.get(value.toString())) copy.delete(value.toString());
-        else copy.set(value.toString(), true);
-        return copy;
-      });
-    },
-    [choosedColors]
-  );
+  const changeChoosedColors = (value: string | number) => {
+    setChoosedColors((prev) => {
+      const copy = new Map(prev);
+      if (copy.get(value.toString())) copy.delete(value.toString());
+      else copy.set(value.toString(), true);
+      return copy;
+    });
+  };
 
   useEffect(() => {
     const map = new Map(sizesToSell);
@@ -101,15 +98,12 @@ const AddProductForm: FC<AddProductProps> = ({
     setSizesToSell(map);
   }, [stock]);
 
-  const onClickSize = useCallback(
-    (value: string | number) => {
-      const temp = new Map(sizesToSell);
-      if (temp.get(Number(value))) temp.delete(Number(value));
-      else temp.set(Number(value), Number(value));
-      setSizesToSell(temp);
-    },
-    [sizesToSell]
-  );
+  const onClickSize = (value: string | number) => {
+    const temp = new Map(sizesToSell);
+    if (temp.get(Number(value))) temp.delete(Number(value));
+    else temp.set(Number(value), Number(value));
+    setSizesToSell(temp);
+  };
 
   const addProductInputs = Object.entries(inputs).map((input) => {
     if (input[0] === "type") return;
@@ -160,57 +154,41 @@ const AddProductForm: FC<AddProductProps> = ({
     );
   });
 
-  const colorListElems = useMemo(
-    () =>
-      colorList?.map((color) => (
-        <ColorPick
-          name={color.name}
-          colorCode={color.code}
-          active={!!choosedColors.get(color.name)}
-          setFilter={changeChoosedColors}
-          key={color.name}
-          setColorList={setColorList}
-        />
-      )),
-    [colorList]
-  );
+  const colorListElems = colorList?.map((color) => (
+    <ColorPick
+      name={color.name}
+      colorCode={color.code}
+      active={!!choosedColors.get(color.name)}
+      setFilter={changeChoosedColors}
+      key={color.name}
+      setColorList={setColorList}
+    />
+  ));
 
-  const productTypeListElems = useMemo(
-    () =>
-      productTypeList?.map((type) => (
-        <option key={type}>
-          {type.slice(0, 1).toUpperCase() + type.slice(1)}
-        </option>
-      )),
-    [productTypeList]
-  );
+  const productTypeListElems = productTypeList?.map((type) => (
+    <option key={type}>{type.slice(0, 1).toUpperCase() + type.slice(1)}</option>
+  ));
 
-  const stockByColors = useMemo(
-    () =>
-      Array.from(choosedColors, (color) => color[0]).map((color) => (
-        <SizeAvailable
-          key={color}
-          color={color}
-          stock={stock}
-          setStock={setStock}
-        />
-      )),
-    [choosedColors]
+  const stockByColors = Array.from(choosedColors, (color) => color[0]).map(
+    (color) => (
+      <SizeAvailable
+        key={color}
+        color={color}
+        stock={stock}
+        setStock={setStock}
+      />
+    )
   );
-  const sizesFilter = useMemo(
-    () =>
-      allSizes.map((size) => {
-        return (
-          <SizePick
-            size={size}
-            active={!sizesToSell.get(size)}
-            setFilter={onClickSize}
-            key={size}
-          />
-        );
-      }),
-    [allSizes, sizesToSell]
-  );
+  const sizesFilter = allSizes.map((size) => {
+    return (
+      <SizePick
+        size={size}
+        active={!sizesToSell.get(size)}
+        setFilter={onClickSize}
+        key={size}
+      />
+    );
+  });
 
   const [addProductMutation] = useMutation(ADD_PRODUCT, {
     onCompleted: (data) => {
@@ -242,14 +220,14 @@ const AddProductForm: FC<AddProductProps> = ({
           sizesAvailable: stock[1].sizes,
           photos: stock[1].photos,
         };
-      }),
+      }).filter((el) => !!choosedColors.get(el.name)),
     };
     addProductMutation({ variables: product });
   };
 
   const [deleteProductTypeMutation] = useMutation(DELETE_PRODUCT_TYPE, {
     onCompleted: (data, err) => {
-      if (!data.deleteProductType || err) {
+      if (!data.deleteProductType) {
         window.alert(`Error: type has not been deleted`);
         return;
       }

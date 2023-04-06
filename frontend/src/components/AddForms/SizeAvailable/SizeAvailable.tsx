@@ -1,7 +1,5 @@
 import Menu from "@/components/menu/Menu";
-import { Product } from "@/types/product";
 import { Sizes } from "@/types/sizes";
-import { title } from "process";
 import {
   ChangeEvent,
   FC,
@@ -9,10 +7,8 @@ import {
   useEffect,
   Dispatch,
   SetStateAction,
-  useRef,
   useCallback,
 } from "react";
-import { AiOutlineDown } from "react-icons/ai";
 import ImagesSlider from "./ImagesSlider/ImagesSlider";
 import cl from "./sizeAvailable.module.scss";
 
@@ -47,15 +43,12 @@ const SizeAvailable: FC<SizeAvailableProps> = ({
     _47: 0,
   });
 
-  const onChangeInput = useCallback(
-    (e: ChangeEvent<HTMLInputElement>, size: string) => {
-      setSizes({
-        ...sizes,
-        [size]: Number(e.target.value) || 0,
-      });
-    },
-    [sizes]
-  );
+  const onChangeInput = (e: ChangeEvent<HTMLInputElement>, size: string) => {
+    setSizes({
+      ...sizes,
+      [size]: Number(e.target.value) || 0,
+    });
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -88,29 +81,35 @@ const SizeAvailable: FC<SizeAvailableProps> = ({
     );
   });
 
-  const uploadImages = useCallback(
-    (files: FileList | null) => {
-      if (!files) return;
+  const uploadImages = (files: FileList | null) => {
+    if (!files) return;
 
-      const convertToBase64 = (file: any) => {
-        return new Promise((resolve, reject) => {
-          const fr = new FileReader();
-          fr.onerror = reject;
-          fr.onload = () => {
-            resolve(fr.result);
-          };
-          fr.readAsDataURL(file);
-        });
-      };
+    for (let i = 0; i < files.length; i++) {
+      let file = files[i];
 
-      Promise.all(Array.prototype.map.call(files, convertToBase64)).then(
-        (newPhotos) => {
-          setPhotos([...photos, ...newPhotos]);
-        }
-      );
-    },
-    [photos]
-  );
+      if (!/image/.test(file.type)) {
+        alert("File is not image");
+        return;
+      }
+    }
+
+    const convertToBase64 = (file: any) => {
+      return new Promise((resolve, reject) => {
+        const fr = new FileReader();
+        fr.onerror = reject;
+        fr.onload = () => {
+          resolve(fr.result);
+        };
+        fr.readAsDataURL(file);
+      });
+    };
+
+    Promise.all(Array.prototype.map.call(files, convertToBase64)).then(
+      (newPhotos) => {
+        setPhotos([...photos, ...newPhotos]);
+      }
+    );
+  };
 
   return (
     <div className={cl.wrapper}>
@@ -128,6 +127,7 @@ const SizeAvailable: FC<SizeAvailableProps> = ({
             type="file"
             id={`uploadImages-${title ? `${title}-${color}` : color}`}
             multiple
+            accept="image/*"
             onChange={(e) => uploadImages(e.target.files)}
           />
         </label>

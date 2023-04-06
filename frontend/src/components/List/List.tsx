@@ -16,6 +16,7 @@ import { CardType } from "@/types/card";
 import { CartProductType } from "@/types/cartProductType";
 import { useRouter } from "next/router";
 import Loading from "../Loading/Loading";
+import { Product } from "@/types/product";
 
 interface ListProps {
   setCart?: Dispatch<SetStateAction<CartProductType[]>>;
@@ -24,13 +25,24 @@ interface ListProps {
 const List: FC<ListProps> = ({ setCart }) => {
   const router = useRouter();
   const [page, setPage] = useState(-1);
+  const [filteredData, setFilteredData] = useState([]);
 
   let usingRouter = useMemo(
     () => !(router.asPath.split("/").pop() === "all"),
     [router.asPath]
   );
 
-  const { data, filter, loading, error, setFilter, setSort, sort } = useFilter({
+  const {
+    data,
+    filter,
+    loading,
+    error,
+    setFilter,
+    setSort,
+    sort,
+    minPrice,
+    maxPrice,
+  } = useFilter({
     usingRouter,
     apolloQuery: FETCH_CARDS_WITH_FILTERS,
     dbName: `cardsWithFilter`,
@@ -41,7 +53,7 @@ const List: FC<ListProps> = ({ setCart }) => {
       if (
         window.scrollY + window.innerHeight >
           document.body.scrollHeight - 100 &&
-        page < Math.round(data?.length / 12)
+        page < Math.round(filteredData?.length / 12)
       ) {
         setPage((prev) => prev + 1);
       }
@@ -52,18 +64,41 @@ const List: FC<ListProps> = ({ setCart }) => {
     return () => {
       window.removeEventListener("scroll", addPage);
     };
-  }, [page]);
+  }, [filteredData, page]);
 
   useEffect(() => {
     if (!data) return;
+    setFilteredData(
+      data.filter(
+        (product: Product) =>
+          product.price >= minPrice && product.price <= maxPrice
+      )
+    );
     setPage(1);
   }, [data]);
+
+  useEffect(() => {
+    if (!data) return;
+    const timer = setTimeout(() => {
+      setFilteredData(
+        data.filter(
+          (product: Product) =>
+            product.price >= minPrice && product.price <= maxPrice
+        )
+      );
+    }, 500);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [minPrice, maxPrice]);
 
   if (!loading && error) {
     return <>{error.message}</>;
   }
 
-  const cards = data?.slice(0, page * 12).map((card: CardType) => {
+  console.log(page);
+
+  const cards = filteredData?.slice(0, page * 12).map((card: CardType) => {
     return (
       <Card
         title={card.title}

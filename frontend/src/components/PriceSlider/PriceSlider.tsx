@@ -24,36 +24,33 @@ const PriceSlider: FC<PriceSliderProps> = ({ filter, setFilter }) => {
   const minInput = useRef<HTMLInputElement>(null);
   const maxInput = useRef<HTMLInputElement>(null);
 
-  const handleInput = useCallback(
-    (input: string, type: "minPrice" | "maxPrice") => {
-      if (!/^\d*\.?\d?\d?$/.test(input)) {
-        return;
-      }
-      if (input.length > 10) return;
-      switch (type) {
-        case "minPrice":
-          setFilter({
-            ...filter,
-            price: { ...filter.price, min: Number(input) },
-          });
-          break;
-        case "maxPrice":
-          setFilter({
-            ...filter,
-            price: { ...filter.price, max: Number(input) },
-          });
-          break;
-      }
-    },
-    [filter]
-  );
+  const handleInput = (input: string, type: "minPrice" | "maxPrice") => {
+    if (!/^\d*\.?\d?\d?$/.test(input)) {
+      return;
+    }
+    if (input.length > 10) return;
+    switch (type) {
+      case "minPrice":
+        setFilter({
+          ...filter,
+          price: { ...filter.price, min: Number(input) },
+        });
+        break;
+      case "maxPrice":
+        setFilter({
+          ...filter,
+          price: { ...filter.price, max: Number(input) },
+        });
+        break;
+    }
+  };
 
-  const checkInputWidth = useCallback(() => {
+  const checkInputWidth = () => {
     if (maxInput.current)
       maxInput.current.style.width = maxPrice.toString().length * 12 + "px";
     if (minInput.current)
       minInput.current.style.width = minPrice.toString().length * 12 + "px";
-  }, [minPrice, maxPrice]);
+  };
 
   useEffect(() => {
     checkInputWidth();

@@ -25,11 +25,13 @@ export const useFilter = ({
   dbName: string;
 }) => {
   const router = useRouter();
-  const fetchNext = useRef(true);
+  const routerHistory = useRef("");
   const initRender = useRef(true);
   const filterHistory = useRef({
     sizes: new Map<number, number>(),
     colors: new Map<string, string>(),
+    lowerPrice: -1,
+    higherPrice: -1,
   });
   const fetchBlock = useRef<boolean>(false);
   const type = usingRouter ? router.asPath.slice(1) : undefined;
@@ -268,6 +270,8 @@ export const useFilter = ({
 
     filterHistory.current.colors = filter.color;
     filterHistory.current.sizes = filter.size;
+    filterHistory.current.lowerPrice = filter.price.lowerPrice;
+    filterHistory.current.higherPrice = filter.price.higherPrice;
 
     setLoading(true);
 
@@ -310,22 +314,46 @@ export const useFilter = ({
     fetchBlock.current = true;
 
     setLoading(true);
-    fetchNext.current = true;
+    if (routerHistory.current !== router.asPath) {
+      setFilter({
+        title: "",
+        size: new Map(),
+        color: new Map(),
+        price: {
+          min: 0,
+          max: Number.MAX_VALUE,
+          lowerPrice: 0,
+          higherPrice: 100,
+        },
+      });
+      fetch({ fetchFunc: fetchWithChangeLimits, colors: [], sizes: [] });
+      routerHistory.current = router.asPath;
+      return;
+    }
+
+    routerHistory.current = router.asPath;
 
     fetch({ fetchFunc: fetchWithChangeLimits });
   }, [router.asPath, sort]);
 
   useEffect(() => {
     if (loading) return;
-    if (fetchBlock.current || filter.title) {
-      fetchBlock.current = false;
-      return;
-    }
-    const timer = setTimeout(fetchWithFilters, 1500);
+
+    const timer = setTimeout(fetchWithFilters, 500);
     return () => {
       clearTimeout(timer);
     };
-  }, [filter.price.min, filter.price.max, filter.color, filter.size]);
+  }, [filter.color, filter.size]);
 
-  return { data, setSort, filter, setFilter, loading, error, sort };
+  return {
+    data,
+    setSort,
+    filter,
+    setFilter,
+    loading,
+    error,
+    sort,
+    minPrice: filter.price.min,
+    maxPrice: filter.price.max,
+  };
 };

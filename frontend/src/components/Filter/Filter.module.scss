@@ -16,11 +16,16 @@
     display: flex;
     align-items: center;
     color: white;
-    font-size: 30px;
+    // font-size: 30px;
     background-color: black;
     padding: 5px;
     transition: 0.3s;
     cursor: pointer;
+    // min-width: 70px;
+
+    @media (max-width: 360px) {
+        font-size: 16px !important;
+    }
 
     &:hover{
         background-color: $secondary-color;
@@ -29,11 +34,14 @@
 }
 .icon{
     font-size: 26px;
+    @media (max-width: 360px) {
+        font-size: 10px !important;
+    }
 }
 .sort{
     margin-left: 20px;
     border: gray 2px solid;
-    padding: 10px;
+    padding: 8px;
 }
 .input{
     padding: 10px;

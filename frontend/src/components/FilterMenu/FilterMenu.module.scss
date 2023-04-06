@@ -2,6 +2,7 @@
 .menu{
     @extend .side_menu;
     z-index: 1000;
+    overflow-y: auto;
 }
 .title{
     display: flex;

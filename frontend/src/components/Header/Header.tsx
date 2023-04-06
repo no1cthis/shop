@@ -116,9 +116,11 @@ const Header: FC<HeaderProps> = ({ isAdminPanel, cart, setCart }) => {
           </ul>
         </nav>
         <div className={cl.icons}>
-          <Link href={"/admin-panel/add-forms"}>
-            <FaUserAlt />
-          </Link>
+          {typeof window !== "undefined" && window.innerWidth > 1400 && (
+            <Link href={"/admin-panel/add-forms"}>
+              <FaUserAlt />
+            </Link>
+          )}
           <FaSearch onClick={() => setShowSearchBar(true)} />
           {!!cart &&
             setCart && [

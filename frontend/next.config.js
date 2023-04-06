@@ -23,7 +23,7 @@ module.exports = {
       "cdn.dribbble.com",
       "localhost",
       process.env.NEXT_PUBLIC_BACKEND_URL,
-      "13.39.108.216",
+      "52.236.183.83",
     ],
   },
 };

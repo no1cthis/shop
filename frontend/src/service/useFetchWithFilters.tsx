@@ -44,6 +44,7 @@ export const useFetchWithFilters = ({
           calculateLimits,
         });
       setLoading(false);
+      console.log(fetchedData);
     },
     onError: (error) => {
       console.log(error);
